@@ -1,0 +1,439 @@
+body {
+    margin: 0;
+    font-family: var(--font-body);
+    background: var(--md-sys-color-background);
+    color: var(--md-sys-color-on-background);
+}
+
+/* Header */
+.site-header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+
+    padding: var(--space-4);
+    background-color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+    font-family: var(--font-heading);
+}
+
+.header-left {
+    justify-self: start;
+}
+
+.header-right {
+    justify-self: end;
+}
+
+.back-link {
+    text-decoration: underline;
+    color: inherit;
+}
+
+.site-header a {
+    color: inherit;
+}
+
+.site-title {
+    grid-column: 2;
+    justify-self: center;
+    margin: 0;
+    font-family: var(--font-heading);
+    letter-spacing: var(--space-1);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-heading);
+    margin: 0;
+}
+
+.app {
+    display: grid;
+    padding: var(--space-4);
+    gap: var(--space-4);
+}
+
+/* Calendar */
+.calendar {
+    display: grid;
+    gap: var(--space-2);
+    margin: var(--space-4);
+    padding-right: var(--space-4);
+    padding-bottom: var(--space-4);
+
+    background-color: var(--md-sys-color-surface-container);
+    min-width: 0;
+
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-areas:
+        ". breakfast lunch dinner"
+        "sun sunB sunL sunD"
+        "mon monB monL monD"
+        "tues tueB tueL tueD"
+        "wed wedB wedL wedD"
+        "thurs thuB thuL thuD"
+        "fri friB friL friD"
+        "sat satB satL satD";
+}
+
+.calendar>h2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slot {
+    display: flex;
+    padding: 0;
+
+    background: var(--md-sys-color-surface);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--radius-2);
+
+    justify-content: stretch;
+    align-items: stretch;
+
+    overflow: hidden;
+}
+
+.meal-card {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: var(--radius-2);
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+    border: none;
+}
+
+.meal-card--cooking {
+    background: var(--md-sys-color-tertiary-container);
+    color: var(--md-sys-color-on-tertiary-container);
+}
+
+.meal-card--prepped {
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+}
+
+.breakfast {
+    grid-area: breakfast;
+}
+
+.lunch {
+    grid-area: lunch;
+}
+
+.dinner {
+    grid-area: dinner;
+}
+
+.sun {
+    grid-area: sun;
+}
+
+.mon {
+    grid-area: mon;
+}
+
+.tues {
+    grid-area: tues;
+}
+
+.wed {
+    grid-area: wed;
+}
+
+.thurs {
+    grid-area: thurs;
+}
+
+.fri {
+    grid-area: fri;
+}
+
+.sat {
+    grid-area: sat;
+}
+
+/* slots */
+.slot--sun-breakfast {
+    grid-area: sunB;
+}
+
+.slot--sun-lunch {
+    grid-area: sunL;
+}
+
+.slot--sun-dinner {
+    grid-area: sunD;
+}
+
+.slot--mon-breakfast {
+    grid-area: monB;
+}
+
+.slot--mon-lunch {
+    grid-area: monL;
+}
+
+.slot--mon-dinner {
+    grid-area: monD;
+}
+
+.slot--tues-breakfast {
+    grid-area: tueB;
+}
+
+.slot--tues-lunch {
+    grid-area: tueL;
+}
+
+.slot--tues-dinner {
+    grid-area: tueD;
+}
+
+.slot--wed-breakfast {
+    grid-area: wedB;
+}
+
+.slot--wed-lunch {
+    grid-area: wedL;
+}
+
+.slot--wed-dinner {
+    grid-area: wedD;
+}
+
+.slot--thurs-breakfast {
+    grid-area: thuB;
+}
+
+.slot--thurs-lunch {
+    grid-area: thuL;
+}
+
+.slot--thurs-dinner {
+    grid-area: thuD;
+}
+
+.slot--fri-breakfast {
+    grid-area: friB;
+}
+
+.slot--fri-lunch {
+    grid-area: friL;
+}
+
+.slot--fri-dinner {
+    grid-area: friD;
+}
+
+.slot--sat-breakfast {
+    grid-area: satB;
+}
+
+.slot--sat-lunch {
+    grid-area: satL;
+}
+
+.slot--sat-dinner {
+    grid-area: satD;
+}
+
+.row-buttons {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-4);
+}
+
+.row-buttons .temp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: var(--space-4);
+    margin: var(--space-4);
+    border-radius: var(--radius-2);
+    border: var(--border-1) solid var(--md-sys-color-outline);
+    text-decoration: underline;
+    font-family: inherit;
+
+    background: var(--md-sys-color-tertiary);
+    color: var(--md-sys-color-on-tertiary);
+}
+
+/* Prep Page */
+.preppin-page {
+    display: flex;
+    justify-content: center;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin: var(--space-6);
+    padding: var(--space-6);
+
+    background: var(--md-sys-color-surface-variant);
+
+    width: 100%;
+    max-width: 50rem;
+    max-height: 60rem;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.form-field label {
+    font-weight: 600;
+}
+
+.form-field input,
+.form-field select {
+    padding: var(--space-2);
+    border-radius: var(--radius-1);
+    border: var(--border-1) solid var(--md-sys-color-outline);
+}
+
+.checkbox-field {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+/* Recipes Page */
+.recipes-page {
+    display: flex;
+    margin: var(--space-4);
+}
+
+/* Cards */
+.card-list {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: 1fr;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    padding: var(--space-6);
+    margin: var(--space-4);
+    border: var(--border-2) solid var(--md-sys-color-surface-tint);
+    background-color: var(--md-sys-color-on-secondary);
+}
+
+.card .pic {
+    max-width: 20rem;
+    min-width: 4rem;
+
+}
+
+.header-with-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    font-family: var(--font-heading);
+}
+
+.header-with-btn h2 {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.header-with-btn button {
+    padding: var(--space-4);
+    border-radius: var(--radius-2);
+    border: var(--border-1) solid var(--md-sys-color-outline);
+    margin: 0;
+
+    flex: 0 0 auto;
+
+    text-decoration: underline;
+    font-family: inherit;
+
+    background: var(--md-sys-color-tertiary-container);
+    color: var(--md-sys-color-on-tertiary-container);
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: var(--space-4);
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 40rem;
+    /* controls maximum width of modal */
+    max-height: 90vh;
+    /* prevent overflow beyond viewport */
+    overflow: auto;
+    /* allow internal scrolling if content tall */
+    background: var(--md-sys-color-surface-container);
+    border-radius: var(--radius-2, 1rem);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    padding: var(--space-4);
+}
+
+.edit-recipe-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-5);
+}
+
+.dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-3);
+}
+
+/* Desktop */
+@media only screen and (min-width: 32em) {
+    .calendar {
+        display: grid;
+        min-height: 35rem;
+
+        grid-template-columns: 1fr repeat(7, 1fr);
+        grid-template-areas:
+            ". sun mon tues wed thurs fri sat"
+            "breakfast sunB monB tueB wedB thuB friB satB"
+            "lunch     sunL monL tueL wedL thuL friL satL"
+            "dinner    sunD monD tueD wedD thuD friD satD";
+    }
+
+    .card-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+}
