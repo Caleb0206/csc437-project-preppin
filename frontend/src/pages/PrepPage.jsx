@@ -1,4 +1,4 @@
-import { Header } from "./header.jsx";
+import { Header } from "../components/Header.jsx";
 import { Link } from "react-router-dom";
 
 export function PrepPage() {

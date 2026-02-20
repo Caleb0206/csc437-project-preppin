@@ -73,6 +73,7 @@ h6 {
 
     background-color: var(--md-sys-color-surface-container);
     min-width: 0;
+    min-height: 30rem;
 
     grid-template-columns: 1fr 1fr 1fr 1fr;
     grid-template-areas:
@@ -436,7 +437,6 @@ h6 {
 @media only screen and (min-width: 32em) {
     .calendar {
         display: grid;
-        min-height: 35rem;
 
         grid-template-columns: 1fr repeat(7, 1fr);
         grid-template-areas:

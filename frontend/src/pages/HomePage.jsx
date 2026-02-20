@@ -1,5 +1,5 @@
-import { Header } from "./header.jsx"
-import { NavButtons } from "./NavButtons.jsx";
+import { Header } from "../components/Header.jsx"
+import { NavButtons } from "../components/NavButtons.jsx";
 
 export function Calendar() {
     return (
