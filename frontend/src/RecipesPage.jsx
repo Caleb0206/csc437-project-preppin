@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Header } from "./header.jsx";
 import { EditRecipeModal } from "./EditRecipeModal.jsx";
 
@@ -49,12 +50,12 @@ export function RecipesPage() {
 
     return (
         <>
-            <Header leftSlot={<a href="/" className="back-link">Back</a>} />
+            <Header leftSlot={<Link to="/" className="back-link">Back</Link>} />
             <main className="recipes-page">
                 <div>
                     <div className="header-with-btn">
                         <h2>Recipes</h2>
-                        <button className="temp-btn" onClick={openAdd}>
+                        <button onClick={openAdd}>
                             Add Recipe
                         </button>
                     </div>

@@ -1,10 +1,10 @@
-
+import { Link } from "react-router-dom";
 
 export function NavButtons() {
     return (
         <nav className="row-buttons">
-            <a href="recipes-page.html" className="temp-btn">Recipes</a>
-            <a href="prep-page.html" className="temp-btn">Prep!</a>
+            <Link to="/recipes" className="temp-btn">Recipes</Link>
+            <Link to="/prep" className="temp-btn">Prep!</Link>
         </nav>
     )
 }

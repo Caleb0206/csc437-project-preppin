@@ -1,9 +1,10 @@
 import { Header } from "./header.jsx";
+import { Link } from "react-router-dom";
 
 export function PrepPage() {
     return (
         <>
-            <Header leftSlot={<a href="/" className="back-link">Back</a>} />
+            <Header leftSlot={<Link to="/" className="back-link">Back</Link>} />
             <main className="preppin-page">
                 <div className="form-container">
                     <div className="form-field">
@@ -46,8 +47,8 @@ export function PrepPage() {
                         <input id="input-isBreakfast" type="checkbox" />
                     </div>
                     <div className="row-buttons">
-                        <a href="index.html" className="temp-btn">Cancel</a>
-                        <a href="index.html" className="temp-btn">Prep!</a>
+                        <Link to="/" className="temp-btn">Cancel</Link>
+                        <Link to="/" className="temp-btn">Prep!</Link>
                     </div>
 
                 </div>

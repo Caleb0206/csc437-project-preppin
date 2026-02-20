@@ -5,6 +5,11 @@ body {
     color: var(--md-sys-color-on-background);
 }
 
+button {
+    font-family: inherit;
+    cursor: pointer;
+}
+
 /* Header */
 .site-header {
     display: grid;
@@ -304,10 +309,12 @@ h6 {
 }
 
 .form-field input,
-.form-field select {
+.form-field select,
+.form-field textarea {
     padding: var(--space-2);
     border-radius: var(--radius-1);
     border: var(--border-1) solid var(--md-sys-color-outline);
+    font-family: var(--font-body)
 }
 
 .checkbox-field {
@@ -397,6 +404,13 @@ h6 {
     border-radius: var(--radius-2, 1rem);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
     padding: var(--space-4);
+}
+
+.modal-content button {
+    border-radius: 1rem;
+    padding: var(--space-3);
+    cursor: pointer;
+    color: var(--md-sys-color-on-surface);
 }
 
 .edit-recipe-form {
