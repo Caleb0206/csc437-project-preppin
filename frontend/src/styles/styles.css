@@ -8,6 +8,12 @@ body {
 button {
     font-family: inherit;
     cursor: pointer;
+
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    background: none;
+    font: inherit;
 }
 
 /* Header */
@@ -410,10 +416,20 @@ h6 {
 }
 
 .modal-content button {
+    border: var(--border-1) solid var(--md-sys-color-outline);
+    /* box-shadow: none; */
+    /* background-image: none; */
+
     border-radius: 1rem;
     padding: var(--space-3);
     cursor: pointer;
+
     color: var(--md-sys-color-on-surface);
+    background-color: var(--md-sys-color-surface);
+}
+
+.modal-content button:hover {
+    background-color: var(--md-sys-color-surface-container-high);
 }
 
 .edit-recipe-form {

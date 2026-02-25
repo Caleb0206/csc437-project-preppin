@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
 
 import { Routes, Route, Link, useLocation } from "react-router";
+import { Layout } from "./Layout.jsx";
 import { HomePage } from "./pages/HomePage.jsx"
 import { PrepPage } from "./pages/PrepPage.jsx";
 import { RecipesPage } from "./pages/RecipesPage.jsx";
-import { Header } from "./components/Header.jsx";
+
 const DAYS = ["sun", "mon", "tues", "wed", "thurs", "fri", "sat"];
 
 function emptyWeek() {
@@ -20,12 +21,11 @@ function emptyWeek() {
 }
 
 function App() {
-  const location = useLocation();
-
   const [theme, setTheme] = useState("light");
 
   useEffect(() => {
-    document.documentElement.className = theme;
+    document.documentElement.classList.remove("light", "dark");
+    document.documentElement.classList.add(theme);
   }, [theme]);
 
   const showBack = location.pathname === "/recipes" || location.pathname === "/prep";
@@ -104,15 +104,17 @@ function App() {
 
   return (
     <>
-      <Header theme={theme} setTheme={setTheme} leftSlot={leftSlot} />
       <Routes>
-        <Route path="/" element={<HomePage calendar={calendar} />} />
-        <Route
-          path="/recipes"
-          element={<RecipesPage />} />
-        <Route
-          path="/prep"
-          element={<PrepPage onSubmit={prepSubmit} />} />
+        <Route element={<Layout theme={theme} setTheme={setTheme} />}>
+          <Route path="/" element={<HomePage calendar={calendar} />} />
+          <Route
+            path="/recipes"
+            element={<RecipesPage />} />
+          <Route
+            path="/prep"
+            element={<PrepPage onSubmit={prepSubmit} />} />
+        </Route>
+
       </Routes>
     </>
   );
