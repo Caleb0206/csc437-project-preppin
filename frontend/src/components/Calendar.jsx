@@ -1,4 +1,3 @@
-import { NavButtons } from "./NavButtons.jsx";
 
 const DAYS = ["sun", "mon", "tues", "wed", "thurs", "fri", "sat"];
 

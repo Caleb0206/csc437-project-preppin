@@ -30,11 +30,6 @@ function App() {
 
   const showBack = location.pathname === "/recipes" || location.pathname === "/prep";
 
-  const leftSlot = useMemo(() => {
-    if (!showBack) return null;
-    return <Link to="/" className="back-link">Back</Link>;
-  }, [showBack]);
-
   // calendar state keyed by day
   const [calendar, setCalendar] = useState(() => emptyWeek());
 

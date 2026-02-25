@@ -10,7 +10,6 @@ export function Layout({ theme, setTheme }) {
             <Header
                 theme={theme}
                 setTheme={setTheme}
-                leftSlot={showBack ? <Link to="/" className="back-link">Back</Link> : null}
             />
             <Outlet />
         </>
