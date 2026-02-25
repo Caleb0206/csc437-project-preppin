@@ -1,37 +1,73 @@
 import { Header } from "../components/Header.jsx";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
+import { useState } from "react";
 
-export function PrepPage() {
+const DAYS = ["sun", "mon", "tues", "wed", "thurs", "fri", "sat"];
+
+export function PrepPage({ onSubmit }) {
+    const navigate = useNavigate();
+
+    const [day, setDay] = useState("sun");
+    const [time, setTime] = useState("breakfast");
+    const [recipeName, setRecipeName] = useState("braised-pork-rice");
+    const [servings, setServings] = useState(2);
+    const [breakfastOnly, setBreakfastOnly] = useState(false);
+
+    function handleSubmit(e) {
+        e.preventDefault();
+
+        const recipeLabel = (() => {
+            if (recipeName === "braised-pork-rice") return "Braised Pork Rice";
+            if (recipeName === "stir-fry-beef-udon") return "Stir Fry Beef Udon";
+            if (recipeName === "scallion-oil-noodles") return "Scallion Oil Noodles";
+            return "";
+        })();
+
+        const res = onSubmit({
+            day,
+            time,
+            recipeName: recipeLabel,
+            servings,
+            fillBreakfastOnly: breakfastOnly,
+        });
+
+        if (!res?.ok) {
+            alert(res?.message || "Slot is already filled.");
+            return;
+        }
+
+        navigate("/");
+    }
+
     return (
         <>
-            <Header leftSlot={<Link to="/" className="back-link">Back</Link>} />
             <main className="preppin-page">
-                <div className="form-container">
+                <form className="form-container" onSubmit={handleSubmit}>
                     <div className="form-field">
-                        <label for="day">Select a day:</label>
-                        <select id="day" name="day">
-                            <option value="sunday">Sunday</option>
-                            <option value="monday">Monday</option>
-                            <option value="tuesday">Tuesday</option>
-                            <option value="wednesday">Wednesday</option>
-                            <option value="thursday">Thursday</option>
-                            <option value="friday">Friday</option>
-                            <option value="saturday">Saturday</option>
+                        <label htmlFor="day">Select a day:</label>
+                        <select id="day" value={day} onChange={(e) => setDay(e.target.value)}>
+                            <option value="sun">Sunday</option>
+                            <option value="mon">Monday</option>
+                            <option value="tues">Tuesday</option>
+                            <option value="wed">Wednesday</option>
+                            <option value="thurs">Thursday</option>
+                            <option value="fri">Friday</option>
+                            <option value="sat">Saturday</option>
                         </select>
                     </div>
 
                     <div className="form-field">
-                        <label for="time">Select a time of meal to prep:</label>
-                        <select id="time" name="time">
-                            <option value="morning">Breakfast</option>
-                            <option value="noon">Lunch</option>
-                            <option value="evening">Dinner</option>
+                        <label htmlFor="time">Select a time of meal to prep:</label>
+                        <select id="time" value={time} onChange={(e) => setTime(e.target.value)}>
+                            <option value="breakfast">Breakfast</option>
+                            <option value="lunch">Lunch</option>
+                            <option value="dinner">Dinner</option>
                         </select>
                     </div>
 
                     <div className="form-field">
-                        <label for="recipe">Select recipe:</label>
-                        <select id="recipe" name="recipe">
+                        <label htmlFor="recipe">Select recipe:</label>
+                        <select id="recipe" value={recipeName} onChange={(e) => setRecipeName(e.target.value)}>
                             <option value="braised-pork-rice">Braised Pork Rice</option>
                             <option value="stir-fry-beef-udon">Stir Fry Beef Udon</option>
                             <option value="scallion-oil-noodles">Scallion Oil Noodles</option>
@@ -39,19 +75,30 @@ export function PrepPage() {
                     </div>
 
                     <div className="form-field">
-                        <label for="input-servings">Servings:</label>
-                        <input id="input-servings" type="number" />
+                        <label htmlFor="input-servings">Servings:</label>
+                        <input
+                            id="input-servings"
+                            type="number"
+                            value={servings}
+                            onChange={(e) => setServings(e.target.value)}
+                            min="1"
+                        />
                     </div>
                     <div className="form-field checkbox-field">
-                        <label for="input-isBreakfast">Breakfast</label>
-                        <input id="input-isBreakfast" type="checkbox" />
+                        <label htmlFor="input-isBreakfast">Fill breakfast only</label>
+                        <input
+                            id="input-isBreakfast"
+                            type="checkbox"
+                            checked={breakfastOnly}
+                            onChange={(e) => setBreakfastOnly(e.target.checked)}
+                        />
                     </div>
                     <div className="row-buttons">
                         <Link to="/" className="temp-btn">Cancel</Link>
-                        <Link to="/" className="temp-btn">Prep!</Link>
+                        <button type="submit" className="temp-btn">Prep!</button>
                     </div>
 
-                </div>
+                </form>
             </main>
         </>
     )

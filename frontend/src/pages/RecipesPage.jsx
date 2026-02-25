@@ -50,7 +50,6 @@ export function RecipesPage() {
 
     return (
         <>
-            <Header leftSlot={<Link to="/" className="back-link">Back</Link>} />
             <main className="recipes-page">
                 <div>
                     <div className="header-with-btn">
