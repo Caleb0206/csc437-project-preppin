@@ -72,9 +72,11 @@ function App() {
   const [calendar, setCalendar] = useState(() => seededWeek()); // emptyWeek());
 
   // function prepSubmit passed to PrepPage to populate calendar
-  function prepSubmit({ day, time, recipeName, servings, fillBreakfastOnly }) {
+  function prepSubmit({ day, time, recipeName, servings, eatOneServing, fillBreakfastOnly }) {
     const servingsNum = Number(servings) || 0;
-    const leftovers = Math.max(0, servingsNum - 1);
+
+    // if eat 1 on cooking day, only (servings - 1) are left. otherwise schedule all servings
+    const leftovers = Math.max(0, servingsNum - (eatOneServing ? 1 : 0));
 
     const dayIndex = DAYS.indexOf(day);
     const mealOrder = { breakfast: 0, lunch: 1, dinner: 2 };
@@ -118,7 +120,7 @@ function App() {
       const copy = JSON.parse(JSON.stringify(prev));
 
       // mark cooking slot
-      copy[day][time] = { kind: "cooking", recipe: recipeName };
+      copy[day][time] = { kind: "cooking", recipe: recipeName, ateOne: eatOneServing };
 
       // Fill in leftovers
       for (let i = 0; i < leftovers && i < slots.length; i++) {

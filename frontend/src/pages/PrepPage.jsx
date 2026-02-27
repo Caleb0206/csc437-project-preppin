@@ -12,6 +12,7 @@ export function PrepPage({ recipes, onSubmit }) {
     const [recipeId, setRecipeId] = useState(recipes[0]?.id ?? "");
     const [servings, setServings] = useState(2);
     const [breakfastOnly, setBreakfastOnly] = useState(false);
+    const [eatOne, setEatOne] = useState(true);
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -24,6 +25,7 @@ export function PrepPage({ recipes, onSubmit }) {
             time,
             recipeName: recipeLabel,
             servings,
+            eatOneServing: eatOne,
             fillBreakfastOnly: breakfastOnly,
         });
 
@@ -81,6 +83,15 @@ export function PrepPage({ recipes, onSubmit }) {
                             onChange={(e) => setServings(e.target.value)}
                             min="1"
                             required
+                        />
+                    </div>
+                    <div className="form-field checkbox-field">
+                        <label htmlFor="eat-one">Eat one serving on cooking day</label>
+                        <input
+                            id="eat-one"
+                            type="checkbox"
+                            checked={eatOne}
+                            onChange={(e) => setEatOne(e.target.checked)}
                         />
                     </div>
                     <div className="form-field checkbox-field">

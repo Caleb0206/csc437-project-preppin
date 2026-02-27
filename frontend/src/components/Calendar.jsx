@@ -8,6 +8,7 @@ function SlotContent({ cell }) {
             <div className="meal-card meal-card--cooking">
                 <strong>Cooking</strong>
                 <p>{cell.recipe}</p>
+                {cell.ateOne && <small>Eat 1 serving</small>}
             </div>);
     }
     if (cell.kind === "prepped") {
