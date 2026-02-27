@@ -1,13 +1,30 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export function EditRecipeModal({
     isOpen,
     onClose,
-    mode = "edit",
-    recipe = null,
+    onSave,
+    mode,
+    recipe,
 }) {
+    const [name, setName] = useState("");
+    const [ingredients, setIngredients] = useState("");
+
     useEffect(() => {
         if (!isOpen) return;
+
+        if (mode === "edit" && recipe) {
+            setName(recipe.name ?? "");
+            setIngredients(recipe.ingredients ?? "");
+        } else {
+            setName("");
+            setIngredients("");
+        }
+    }, [isOpen, mode, recipe]);
+
+    useEffect(() => {
+        if (!isOpen) return;
+
         function onKey(e) {
             if (e.key === "Escape") onClose();
         }
@@ -18,6 +35,11 @@ export function EditRecipeModal({
     if (!isOpen) return null;
 
     const title = mode === "add" ? "Add Recipe" : "Edit Recipe";
+
+    function handleSubmit(e) {
+        e.preventDefault();
+        onSave({ name, ingredients });
+    }
 
     return (
         <div
@@ -34,7 +56,7 @@ export function EditRecipeModal({
                 role="dialog"
                 aria-modal="true"
             >
-                <div className="edit-recipe-form">
+                <form className="edit-recipe-form" onSubmit={handleSubmit}>
                     <header className="dialog-header">
                         <h2 id="edit-recipe-title">{title}</h2>
                         <button
@@ -47,7 +69,12 @@ export function EditRecipeModal({
                     </header>
                     <div className="form-field">
                         <label htmlFor="recipe-name">Recipe name</label>
-                        <input id="recipe-name" type="text" defaultValue={recipe?.name ?? ""} />
+                        <input
+                            id="recipe-name"
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
                     </div>
                     <div className="form-field">
                         <label htmlFor="recipe-img">Image</label>
@@ -60,18 +87,21 @@ export function EditRecipeModal({
                         <textarea
                             id="ingredients"
                             rows="4"
-                            defaultValue={recipe?.ingredients ?? ""}
+                            value={ingredients}
+                            onChange={(e) => setIngredients(e.target.value)}
                             placeholder="List ingredients..."
                         />
                     </div>
+                    <footer className="dialog-actions">
+                        <button type="button" value="cancel" onClick={onClose}>
+                            Cancel
+                        </button>
+                        <button type="submit" value="confirm" className="primary">
+                            Save
+                        </button>
+                    </footer>
+                </form>
 
-                </div>
-                <footer className="dialog-actions">
-                    <button value="cancel" onClick={onClose}>Cancel</button>
-                    <button value="confirm" className="primary" onClick={onClose}>
-                        Save
-                    </button>
-                </footer>
             </div>
         </div>
     )

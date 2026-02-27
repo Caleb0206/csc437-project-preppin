@@ -4,24 +4,20 @@ import { useState } from "react";
 
 const DAYS = ["sun", "mon", "tues", "wed", "thurs", "fri", "sat"];
 
-export function PrepPage({ onSubmit }) {
+export function PrepPage({ recipes, onSubmit }) {
     const navigate = useNavigate();
 
     const [day, setDay] = useState("sun");
     const [time, setTime] = useState("breakfast");
-    const [recipeName, setRecipeName] = useState("braised-pork-rice");
+    const [recipeId, setRecipeId] = useState(recipes[0]?.id ?? "");
     const [servings, setServings] = useState(2);
     const [breakfastOnly, setBreakfastOnly] = useState(false);
 
     function handleSubmit(e) {
         e.preventDefault();
 
-        const recipeLabel = (() => {
-            if (recipeName === "braised-pork-rice") return "Braised Pork Rice";
-            if (recipeName === "stir-fry-beef-udon") return "Stir Fry Beef Udon";
-            if (recipeName === "scallion-oil-noodles") return "Scallion Oil Noodles";
-            return "";
-        })();
+        const selected = recipes.find((r) => String(r.id) === String(recipeId));
+        const recipeLabel = selected?.name ?? "";
 
         const res = onSubmit({
             day,
@@ -67,10 +63,12 @@ export function PrepPage({ onSubmit }) {
 
                     <div className="form-field">
                         <label htmlFor="recipe">Select recipe:</label>
-                        <select id="recipe" value={recipeName} onChange={(e) => setRecipeName(e.target.value)}>
-                            <option value="braised-pork-rice">Braised Pork Rice</option>
-                            <option value="stir-fry-beef-udon">Stir Fry Beef Udon</option>
-                            <option value="scallion-oil-noodles">Scallion Oil Noodles</option>
+                        <select id="recipe" value={recipeId} onChange={(e) => setRecipeId(e.target.value)}>
+                            {recipes.map((r) => (
+                                <option key={r.id} value={r.id}>
+                                    {r.name}
+                                </option>
+                            ))}
                         </select>
                     </div>
 

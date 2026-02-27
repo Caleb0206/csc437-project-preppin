@@ -8,6 +8,32 @@ import { RecipesPage } from "./pages/RecipesPage.jsx";
 
 const DAYS = ["sun", "mon", "tues", "wed", "thurs", "fri", "sat"];
 
+const PLACEHOLDER_IMG = "https://placehold.co/500x200";
+
+const INITIAL_RECIPES = [
+  {
+    id: 1,
+    name: "Braised Pork Rice",
+    imgSrc: PLACEHOLDER_IMG,
+    alt: "placeholder-blank",
+    ingredients: "Ground Pork, White Rice, Soy Sauce, Black Vinegar, Onions, Garlic, Sugar"
+  },
+  {
+    id: 2,
+    name: "Stir Fry Beef Udon",
+    imgSrc: PLACEHOLDER_IMG,
+    alt: "placeholder-blank",
+    ingredients: "Beef Rolls, Udon noodles, Onions, Garlic, Green Onion, Soy Sauce, Black Vinegar, Mirin, Sugar, Chili Flakes"
+  },
+  {
+    id: 3,
+    name: "Scallion Oil Noodles",
+    imgSrc: PLACEHOLDER_IMG,
+    alt: "placeholder-blank",
+    ingredients: "Noodles, Green Onions, Shallots, Neutral Oil, Soy Sauce, Oyster Sauce, White Pepper"
+  }
+];
+
 function emptyWeek() {
   const week = {};
   for (const day of DAYS) {
@@ -20,8 +46,20 @@ function emptyWeek() {
   return week;
 }
 
+// mock data
+function seededWeek() {
+  const week = emptyWeek();
+
+  week.tues.dinner = { kind: "cooking", recipe: "Braised Pork Rice" };
+  week.wed.lunch = { kind: "prepped", recipe: "Braised Pork Rice" };
+  week.wed.dinner = { kind: "prepped", recipe: "Braised Pork Rice" };
+
+  return week;
+}
+
 function App() {
   const [theme, setTheme] = useState("light");
+  const [recipes, setRecipes] = useState(INITIAL_RECIPES);
 
   useEffect(() => {
     document.documentElement.classList.remove("light", "dark");
@@ -31,7 +69,7 @@ function App() {
   const showBack = location.pathname === "/recipes" || location.pathname === "/prep";
 
   // calendar state keyed by day
-  const [calendar, setCalendar] = useState(() => emptyWeek());
+  const [calendar, setCalendar] = useState(() => seededWeek()); // emptyWeek());
 
   // function prepSubmit passed to PrepPage to populate calendar
   function prepSubmit({ day, time, recipeName, servings, fillBreakfastOnly }) {
@@ -104,10 +142,10 @@ function App() {
           <Route path="/" element={<HomePage calendar={calendar} />} />
           <Route
             path="/recipes"
-            element={<RecipesPage />} />
+            element={<RecipesPage recipes={recipes} setRecipes={setRecipes} />} />
           <Route
             path="/prep"
-            element={<PrepPage onSubmit={prepSubmit} />} />
+            element={<PrepPage recipes={recipes} onSubmit={prepSubmit} />} />
         </Route>
 
       </Routes>

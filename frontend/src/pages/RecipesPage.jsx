@@ -1,51 +1,63 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Header } from "../components/Header.jsx";
+import { useState, useMemo } from "react";
 import { EditRecipeModal } from "../components/modals/EditRecipeModal.jsx";
 
-export function RecipesPage() {
+const PLACEHOLDER_IMG = "https://placehold.co/500x200";
+
+export function RecipesPage({ recipes, setRecipes }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState("edit");
-    const [activeRecipe, setActiveRecipe] = useState(null);
+    const [activeRecipeId, setActiveRecipeId] = useState(null);
 
-    const recipes = [
-        {
-            id: 1,
-            name: "Braised Pork Rice",
-            imgSrc: "https://placehold.co/500x200",
-            alt: "placeholder-blank",
-            ingredients: "Ground Pork, White Rice, Soy Sauce, Black Vinegar, Onions, Garlic, Sugar"
-        },
-        {
-            id: 2,
-            name: "Stir Fry Beef Udon",
-            imgSrc: "https://placehold.co/500x200",
-            alt: "placeholder-blank",
-            ingredients: "Beef Rolls, Udon noodles, Onions, Garlic, Green Onion, Soy Sauce, Black Vinegar, Mirin, Sugar, Chili Flakes"
-        },
-        {
-            id: 3,
-            name: "Scallion Oil Noodles",
-            imgSrc: "https://placehold.co/500x200",
-            alt: "placeholder-blank",
-            ingredients: "Noodles, Green Onions, Shallots, Neutral Oil, Soy Sauce, Oyster Sauce, White Pepper"
-        }
-    ];
+    const activeRecipe = useMemo(() => {
+        if (activeRecipeId == null) return null;
+        return recipes.find((r) => r.id === activeRecipeId) ?? null;
+    }, [activeRecipeId, recipes]);
 
     function openAdd() {
         setModalMode("add");
-        setActiveRecipe(null);
+        setActiveRecipeId(null);
         setIsModalOpen(true);
     }
 
     function openEdit(recipe) {
         setModalMode("edit");
-        setActiveRecipe(recipe);
+        setActiveRecipeId(recipe.id);
         setIsModalOpen(true);
     }
 
     function closeModal() {
         setIsModalOpen(false);
+    }
+
+    function handleSave(values) {
+        const name = values.name.trim();
+        const ingredients = values.ingredients.trim();
+
+        if (!name) {
+            alert("Recipe name is required.");
+            return;
+        }
+        if (modalMode === "add") {
+            const newRecipe = {
+                id: crypto.randomUUID(),
+                name,
+                ingredients,
+                imgSrc: PLACEHOLDER_IMG,
+                alt: "placeholder-blank",
+            };
+
+            setRecipes((prev) => [...prev, newRecipe]);
+            closeModal();
+            return;
+        }
+
+        // edit mode
+        setRecipes((prev) =>
+            prev.map((r) =>
+                r.id === activeRecipeId ? { ...r, name, ingredients } : r
+            )
+        );
+        closeModal();
     }
 
     return (
@@ -54,7 +66,7 @@ export function RecipesPage() {
                 <div>
                     <div className="header-with-btn">
                         <h2>Recipes</h2>
-                        <button onClick={openAdd}>
+                        <button type="button" onClick={openAdd}>
                             Add Recipe
                         </button>
                     </div>
@@ -64,7 +76,7 @@ export function RecipesPage() {
                             <article key={r.id} className="card">
                                 <div className="header-with-btn">
                                     <h3>{r.name}</h3>
-                                    <button onClick={() => openEdit(r)}>
+                                    <button type="button" onClick={() => openEdit(r)}>
                                         Edit
                                     </button>
                                 </div>
@@ -81,6 +93,7 @@ export function RecipesPage() {
             <EditRecipeModal
                 isOpen={isModalOpen}
                 onClose={closeModal}
+                onSave={handleSave}
                 mode={modalMode}
                 recipe={activeRecipe}
             />
