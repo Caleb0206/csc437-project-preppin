@@ -41,7 +41,7 @@ export function PrepPage({ recipes, onSubmit }) {
                 <form className="form-container" onSubmit={handleSubmit}>
                     <div className="form-field">
                         <label htmlFor="day">Select a day:</label>
-                        <select id="day" value={day} onChange={(e) => setDay(e.target.value)}>
+                        <select id="day" value={day} onChange={(e) => setDay(e.target.value)} required>
                             <option value="sun">Sunday</option>
                             <option value="mon">Monday</option>
                             <option value="tues">Tuesday</option>
@@ -54,7 +54,7 @@ export function PrepPage({ recipes, onSubmit }) {
 
                     <div className="form-field">
                         <label htmlFor="time">Select a time of meal to prep:</label>
-                        <select id="time" value={time} onChange={(e) => setTime(e.target.value)}>
+                        <select id="time" value={time} onChange={(e) => setTime(e.target.value)} required>
                             <option value="breakfast">Breakfast</option>
                             <option value="lunch">Lunch</option>
                             <option value="dinner">Dinner</option>
@@ -63,7 +63,7 @@ export function PrepPage({ recipes, onSubmit }) {
 
                     <div className="form-field">
                         <label htmlFor="recipe">Select recipe:</label>
-                        <select id="recipe" value={recipeId} onChange={(e) => setRecipeId(e.target.value)}>
+                        <select id="recipe" value={recipeId} onChange={(e) => setRecipeId(e.target.value)} required>
                             {recipes.map((r) => (
                                 <option key={r.id} value={r.id}>
                                     {r.name}
@@ -80,6 +80,7 @@ export function PrepPage({ recipes, onSubmit }) {
                             value={servings}
                             onChange={(e) => setServings(e.target.value)}
                             min="1"
+                            required
                         />
                     </div>
                     <div className="form-field checkbox-field">

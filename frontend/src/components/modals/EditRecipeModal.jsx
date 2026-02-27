@@ -74,6 +74,7 @@ export function EditRecipeModal({
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
+                            required
                         />
                     </div>
                     <div className="form-field">

@@ -33,10 +33,8 @@ export function RecipesPage({ recipes, setRecipes }) {
         const name = values.name.trim();
         const ingredients = values.ingredients.trim();
 
-        if (!name) {
-            alert("Recipe name is required.");
-            return;
-        }
+        if (!name) return;
+
         if (modalMode === "add") {
             const newRecipe = {
                 id: crypto.randomUUID(),
