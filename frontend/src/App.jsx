@@ -23,12 +23,34 @@ function emptyWeek() {
     return week;
 }
 
+function mealPlansToCalendar(mealPlans) {
+    const week = emptyWeek();
+
+    for (const entry of mealPlans) {
+        if (!week[entry.day]) continue;
+
+        week[entry.day][entry.meal] = {
+            kind: entry.kind,
+            recipe: entry.recipe,
+            ateOne: entry.ateOne ?? false,
+            servings: entry.servings ?? null,
+        };
+    }
+
+    return week;
+}
+
 
 function App() {
     const [theme, setTheme] = useState("light");
     const [recipes, setRecipes] = useState([]);
     const [recipesLoading, setRecipesLoading] = useState(true);
     const [recipesError, setRecipesError] = useState("");
+
+    // calendar state keyed by day
+    const [calendar, setCalendar] = useState(() => emptyWeek());
+    const [mealPlansLoading, setMealPlansLoading] = useState(true);
+    const [mealPlansError, setMealPlansError] = useState("");
 
     useEffect(() => {
         async function loadRecipes() {
@@ -54,16 +76,36 @@ function App() {
     }, []);
 
     useEffect(() => {
+        async function loadMealPlans() {
+            try {
+                setMealPlansLoading(true);
+                setMealPlansError("");
+
+                const response = await fetch("/api/meal-plans");
+                if (!response.ok) {
+                    throw new Error("Failed to load meal plans");
+                }
+                const data = await response.json();
+                setCalendar(mealPlansToCalendar(data));
+            } catch (err) {
+                console.error(err);
+                setMealPlansError("Could not load meal plans");
+            } finally {
+                setMealPlansLoading(false);
+            }
+        }
+
+        loadMealPlans();
+    }, []);
+
+    useEffect(() => {
         document.documentElement.classList.remove("light", "dark");
         document.documentElement.classList.add(theme);
     }, [theme]);
 
 
-    // calendar state keyed by day
-    const [calendar, setCalendar] = useState(() => emptyWeek()); // seededWeek();
-
-    // function prepSubmit passed to PrepPage to populate calendar
-    function prepSubmit({day, time, recipeName, servings, eatOneServing, fillBreakfastOnly}) {
+    // function prepSubmit passed to PrepPage to populate calendar from Database
+    async function prepSubmit({day, time, recipeName, servings, eatOneServing, fillBreakfastOnly}) {
         const servingsNum = Number(servings) || 0;
 
         // if eat 1 on cooking day, only (servings - 1) are left. otherwise schedule all servings
@@ -71,7 +113,6 @@ function App() {
 
         const dayIndex = DAYS.indexOf(day);
         const mealOrder = {breakfast: 0, lunch: 1, dinner: 2};
-
         const allowedMeals = fillBreakfastOnly ? ["breakfast"] : ["lunch", "dinner"];
 
         const slots = [];
@@ -82,10 +123,7 @@ function App() {
             const dayKey = DAYS[idx];
 
             for (const meal of allowedMeals) {
-                if (offset === 0) {
-                    // meal occurs <= cooking time, skip it, start after cooking slot
-                    if (mealOrder[meal] <= mealOrder[time]) continue;
-                }
+                if (offset === 0 && mealOrder[meal] <= mealOrder[time]) continue;
                 slots.push({day: dayKey, meal});
             }
         }
@@ -93,36 +131,69 @@ function App() {
             {day, meal: time},
             ...slots.slice(0, leftovers).map((s) => ({day: s.day, meal: s.meal})),
         ];
-        // returns to PrepPage
-        let result = {ok: true, message: ""};
 
-        setCalendar((prev) => {
-            const conflicts = targets.filter(t => prev[t.day]?.[t.meal] != null);
+        const conflicts = targets.filter((t) => calendar[t.day]?.[t.meal] != null);
+        if (conflicts.length > 0) {
+            const first = conflicts[0];
+            return {
+                ok: false,
+                message: `Slot filled already (${first.day} ${first.meal}). Try another time`,
+            };
+        }
 
-            if (conflicts.length > 0) {
-                const first = conflicts[0];
-                result = {
-                    ok: false,
-                    message: `Slot filled already (${first.day} ${first.meal}). Try another time`
+        const entries = [
+            {
+                day,
+                meal: time,
+                kind: "cooking",
+                recipe: recipeName,
+                ateOne: eatOneServing,
+                servings: null,
+            },
+            ...slots.slice(0, leftovers).map((s) => ({
+                day: s.day,
+                meal: s.meal,
+                kind: "prepped",
+                recipe: recipeName,
+                ateOne: false,
+                servings: 1,
+            }))
+        ];
+        try {
+            const response = await fetch("/api/meal-plans", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({entries}),
+            });
+            if (!response.ok) {
+                throw new Error("Failed to save meal plans");
+            }
+            setCalendar((prev) => {
+                const copy = JSON.parse(JSON.stringify(prev));
+
+                copy[day][time] = {
+                    kind: "cooking",
+                    recipe: recipeName,
+                    ateOne: eatOneServing,
                 };
-                return prev;
-            }
+                for (let i = 0; i < leftovers && i < slots.length; i++) {
+                    const {day: d, meal: m} = slots[i];
+                    copy[d][m] = {
+                        kind: "prepped",
+                        recipe: recipeName,
+                        servings: 1,
+                    };
+                }
 
-            const copy = JSON.parse(JSON.stringify(prev));
-
-            // mark cooking slot
-            copy[day][time] = {kind: "cooking", recipe: recipeName, ateOne: eatOneServing};
-
-            // Fill in leftovers
-            for (let i = 0; i < leftovers && i < slots.length; i++) {
-                const {day: d, meal: m} = slots[i];
-                copy[d][m] = {kind: "prepped", recipe: recipeName, servings: 1};
-            }
-
-            result = {ok: true, message: ""};
-            return copy;
-        });
-        return result;
+                return copy;
+            });
+            return {ok: true, message: ""};
+        } catch (err) {
+            console.error(err);
+            return {ok: false, message: "Could not save meal plan."};
+        }
     }
 
 

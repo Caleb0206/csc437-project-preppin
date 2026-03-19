@@ -1,10 +1,10 @@
-import { Header } from "../components/Header.jsx";
-import { Link, useNavigate } from "react-router";
-import { useState } from "react";
+import {Header} from "../components/Header.jsx";
+import {Link, useNavigate} from "react-router";
+import {useState} from "react";
 
 const DAYS = ["sun", "mon", "tues", "wed", "thurs", "fri", "sat"];
 
-export function PrepPage({ recipes, onSubmit }) {
+export function PrepPage({recipes, onSubmit}) {
     const navigate = useNavigate();
 
     const [day, setDay] = useState("sun");
@@ -14,13 +14,15 @@ export function PrepPage({ recipes, onSubmit }) {
     const [breakfastOnly, setBreakfastOnly] = useState(false);
     const [eatOne, setEatOne] = useState(true);
 
-    function handleSubmit(e) {
+    const [submitError, setSubmitError] = useState("");
+
+    async function handleSubmit(e) {
         e.preventDefault();
 
         const selected = recipes.find((r) => String(r._id) === String(recipeId));
         const recipeLabel = selected?.name ?? "";
 
-        const res = onSubmit({
+        const res = await onSubmit({
             day,
             time,
             recipeName: recipeLabel,
@@ -30,7 +32,7 @@ export function PrepPage({ recipes, onSubmit }) {
         });
 
         if (!res?.ok) {
-            alert(res?.message || "Slot is already filled.");
+            setSubmitError(res?.message || "Slot is already filled.");
             return;
         }
 
@@ -41,9 +43,17 @@ export function PrepPage({ recipes, onSubmit }) {
         <>
             <main className="preppin-page">
                 <form className="form-container" onSubmit={handleSubmit}>
+                    {submitError && (
+                        <p className="form-error" role="alert">
+                            {submitError}
+                        </p>
+                    )}
                     <div className="form-field">
                         <label htmlFor="day">Select a day:</label>
-                        <select id="day" value={day} onChange={(e) => setDay(e.target.value)} required>
+                        <select id="day" value={day} onChange={(e) => {
+                            setDay(e.target.value);
+                            setSubmitError("");
+                        }} required>
                             <option value="sun">Sunday</option>
                             <option value="mon">Monday</option>
                             <option value="tues">Tuesday</option>
@@ -56,7 +66,10 @@ export function PrepPage({ recipes, onSubmit }) {
 
                     <div className="form-field">
                         <label htmlFor="time">Select a time of meal to prep:</label>
-                        <select id="time" value={time} onChange={(e) => setTime(e.target.value)} required>
+                        <select id="time" value={time} onChange={(e) => {
+                            setTime(e.target.value);
+                            setSubmitError("");
+                        }} required>
                             <option value="breakfast">Breakfast</option>
                             <option value="lunch">Lunch</option>
                             <option value="dinner">Dinner</option>
@@ -65,7 +78,10 @@ export function PrepPage({ recipes, onSubmit }) {
 
                     <div className="form-field">
                         <label htmlFor="recipe">Select recipe:</label>
-                        <select id="recipe" value={recipeId} onChange={(e) => setRecipeId(e.target.value)} required>
+                        <select id="recipe" value={recipeId} onChange={(e) => {
+                            setRecipeId(e.target.value);
+                            setSubmitError("");
+                        }} required>
                             {recipes.map((r) => (
                                 <option key={r._id} value={r._id}>
                                     {r.name}
@@ -80,7 +96,10 @@ export function PrepPage({ recipes, onSubmit }) {
                             id="input-servings"
                             type="number"
                             value={servings}
-                            onChange={(e) => setServings(e.target.value)}
+                            onChange={(e) => {
+                                setServings(e.target.value);
+                                setSubmitError("");
+                            }}
                             min="1"
                             required
                         />
@@ -91,7 +110,10 @@ export function PrepPage({ recipes, onSubmit }) {
                             id="eat-one"
                             type="checkbox"
                             checked={eatOne}
-                            onChange={(e) => setEatOne(e.target.checked)}
+                            onChange={(e) => {
+                                setEatOne(e.target.checked);
+                                setSubmitError("");
+                            }}
                         />
                     </div>
                     <div className="form-field checkbox-field">
@@ -100,7 +122,10 @@ export function PrepPage({ recipes, onSubmit }) {
                             id="input-isBreakfast"
                             type="checkbox"
                             checked={breakfastOnly}
-                            onChange={(e) => setBreakfastOnly(e.target.checked)}
+                            onChange={(e) => {
+                                setBreakfastOnly(e.target.checked);
+                                setSubmitError("");
+                            }}
                         />
                     </div>
                     <div className="row-buttons">

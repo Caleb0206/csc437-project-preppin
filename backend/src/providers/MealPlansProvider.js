@@ -1,6 +1,11 @@
+import {MongoClient} from "mongodb";
+import {getEnvVar} from "../getEnvVar.js";
+
 export class MealPlansProvider {
     constructor(mongoClient) {
-        this.collection = mongoClient.db("preppin").collection("mealPlans");
+        this.mongoClient = mongoClient;
+        const collectionName = getEnvVar("MEALPLANS_COLLECTION_NAME");
+        this.collection = this.mongoClient.db().collection(collectionName);
     }
 
     async getAllMealPlans() {

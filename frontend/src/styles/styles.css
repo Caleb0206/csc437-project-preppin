@@ -157,7 +157,7 @@ h6 {
         "sat satB satL satD";
 }
 
-.calendar>h2 {
+.calendar > h2 {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -388,6 +388,14 @@ h6 {
     border-radius: var(--radius-1);
     border: var(--border-1) solid var(--md-sys-color-outline);
     font-family: var(--font-body)
+}
+
+.form-error {
+    color: var(--md-sys-color-error);
+    background: var(--md-sys-color-error-container);
+    padding: var(--space-2);
+    border-radius: var(--radius-1);
+    margin-bottom: var(--space-2);
 }
 
 .checkbox-field {
