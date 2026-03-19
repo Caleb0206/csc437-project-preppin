@@ -51,4 +51,9 @@ export class RecipesProvider {
 
         return await this.collection.findOne({_id: id, ownerUsername});
     }
+
+    async deleteRecipe(id, ownerUsername) {
+        const result = await this.collection.deleteOne({_id: id, ownerUsername});
+        return result.deletedCount > 0;
+    }
 }

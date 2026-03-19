@@ -87,7 +87,30 @@ export function RecipesPage({recipes, setRecipes, recipesLoading, recipesError, 
             setSaveError("Could not save recipe");
             return false;
         }
+    }
 
+    async function handleDelete(recipeId) {
+        const confirmed = window.confirm("Delete this recipe?");
+        if (!confirmed) return;
+        try {
+            setSaveError("");
+
+            const response = await fetch(`/api/recipes/${recipeId}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to delete recipe");
+            }
+
+            setRecipes((prev) => prev.filter((r) => r._id !== recipeId));
+        } catch (e) {
+            console.error(e);
+            setSaveError("Could not delete recipe");
+        }
     }
 
     return (
@@ -114,11 +137,17 @@ export function RecipesPage({recipes, setRecipes, recipesLoading, recipesError, 
                         <div className="card-list">
                             {recipes.map((r) => (
                                 <article key={r._id} className="card">
-                                    <div className="header-with-btn">
+                                    <div className="recipe-card-actions">
                                         <h3>{r.name}</h3>
-                                        <button type="button" onClick={() => openEdit(r)}>
-                                            Edit
-                                        </button>
+                                        <div className="recipe-card-buttons">
+                                            <button type="button" onClick={() => openEdit(r)}>
+                                                Edit
+                                            </button>
+                                            <button type="button" onClick={() => handleDelete(r._id)}>
+                                                Delete
+                                            </button>
+                                        </div>
+
                                     </div>
                                     <img className="pic" src={r.imgSrc} alt={r.alt}/>
                                     <p>{r.ingredients}</p>

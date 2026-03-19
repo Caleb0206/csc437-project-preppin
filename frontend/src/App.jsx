@@ -210,6 +210,24 @@ function App() {
         }
     }
 
+    async function resetMealPlans() {
+        try {
+            const response = await fetch("/api/meal-plans", {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                }
+            });
+            if (!response.ok) {
+                throw new Error("Failed to reset meal plans");
+            }
+            setCalendar(emptyWeek());
+            return {ok: true};
+        } catch (err) {
+            console.error(err);
+            return {ok: false, message: "Could not reset meal plans"};
+        }
+    }
 
     return (
 
@@ -227,7 +245,7 @@ function App() {
                         index
                         element={
                             <ProtectedRoute authToken={authToken}>
-                                <HomePage calendar={calendar}/>
+                                <HomePage calendar={calendar} onResetMealPlans={resetMealPlans}/>
                             </ProtectedRoute>
                         }
                     />

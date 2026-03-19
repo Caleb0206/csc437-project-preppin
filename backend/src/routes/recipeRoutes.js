@@ -82,4 +82,18 @@ export function registerRecipeRoutes(app, recipesProvider) {
                 res.status(500).json({error: "Failed to update recipe"});
             }
         });
+    app.delete("/api/recipes/:id", async (req, res) => {
+        try {
+            const id = new ObjectId(req.params.id);
+            const deleted = await recipesProvider.deleteRecipe(id, req.userInfo.username);
+            if (!deleted) {
+                res.status(404).json({error: "Recipe not found"});
+                return;
+            }
+            res.status(204).end();
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({error: "Failed to delete recipe"});
+        }
+    })
 }

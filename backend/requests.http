@@ -1,45 +1,274 @@
-### =========================================
+@host = http://localhost:3000
+
+# Replace these after creating/logging in users
+@tokenTest = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE3NzM5NTEwMjEsImV4cCI6MTc3NDAzNzQyMX0.xI3i9uQxUV1Wc_w6KV2fjDO-2zHiHBnJMcuP17uCdVk
+@tokenOwner = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE3NzM5NTEwMjEsImV4cCI6MTc3NDAzNzQyMX0.xI3i9uQxUV1Wc_w6KV2fjDO-2zHiHBnJMcuP17uCdVk
+@tokenDucky = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImR1Y2t5IiwiaWF0IjoxNzczOTUxNDA3LCJleHAiOjE3NzQwMzc4MDd9.CvTuJaHoQI-oopWuiRP9p8APdMwz63gmZ9iYShULh2Q
+# Replace these after creating recipes
+@recipeAnyId = 69bc58d1d6beea0794c96be2
+@recipeOwnerId = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE3NzM5NTEwMjEsImV4cCI6MTc3NDAzNzQyMX0.xI3i9uQxUV1Wc_w6KV2fjDO-2zHiHBnJMcuP17uCdVk
+
+############################################################
+### DEBUG / TEST
+############################################################
+
+### Hello test route -> 200
+GET {{host}}/api/hello
+
+############################################################
+### USERS (REGISTRATION)
+############################################################
+
+### Register test user (GOOD) -> 201
+POST {{host}}/api/users
+Content-Type: application/json
+
+{
+  "username": "test",
+  "email": "test@example.com",
+  "password": "password"
+}
+
+### Register owner user (GOOD) -> 201
+POST {{host}}/api/users
+Content-Type: application/json
+
+{
+  "username": "ducky",
+  "email": "ducky@example.com",
+  "password": "password"
+}
+
+### Register user (BAD: missing field) -> 400
+POST {{host}}/api/users
+Content-Type: application/json
+
+{
+  "username": "x"
+}
+
+### Register user (BAD: username taken) -> 409
+POST {{host}}/api/users
+Content-Type: application/json
+
+{
+  "username": "test",
+  "email": "test2@example.com",
+  "password": "password"
+}
+
+############################################################
+### AUTH (LOGIN / TOKENS)
+############################################################
+
+### Login as test user (GOOD) -> 200 returns token
+POST {{host}}/api/auth/tokens
+Content-Type: application/json
+
+{
+  "username": "test",
+  "password": "password"
+}
+
+### Login as owner user (GOOD) -> 200 returns token
+POST {{host}}/api/auth/tokens
+Content-Type: application/json
+
+{
+  "username": "ducky",
+  "password": "password"
+}
+
+### Login (BAD: wrong password) -> 401
+POST {{host}}/api/auth/tokens
+Content-Type: application/json
+
+{
+  "username": "test",
+  "password": "wrong"
+}
+
+### Login (BAD: user doesn't exist) -> 401
+POST {{host}}/api/auth/tokens
+Content-Type: application/json
+
+{
+  "username": "no_such_user",
+  "password": "password"
+}
+
+### Login (BAD: missing fields) -> 400
+POST {{host}}/api/auth/tokens
+Content-Type: application/json
+
+{
+  "username": "test"
+}
+
+############################################################
 ### RECIPES
-### =========================================
+############################################################
 
-### Get all recipes
-GET http://localhost:3000/api/recipes
+### Get all recipes (BAD: no token) -> 401
+GET {{host}}/api/recipes
+
+### Get all recipes (authorized as test user) -> 200
+GET {{host}}/api/recipes
+Authorization: Bearer {{tokenTest}}
+
+### Get all recipes (authorized as owner user) -> 200
+GET {{host}}/api/recipes
+Authorization: Bearer {{tokenOwner}}
+
+### Create a new recipe (GOOD) -> 201
+POST {{host}}/api/recipes
+Content-Type: multipart/form-data; boundary=RecipeBoundary
+Authorization: Bearer {{tokenTest}}
+
+--RecipeBoundary
+Content-Disposition: form-data; name="name"
+
+Mapo Tofu
+--RecipeBoundary
+Content-Disposition: form-data; name="ingredients"
+
+Tofu, Ground Pork, Chili Bean Paste
+--RecipeBoundary--
+
+### Create a new recipe with uploaded image (GOOD) -> 201
+POST {{host}}/api/recipes
+Content-Type: multipart/form-data; boundary=RecipeBoundary
+Authorization: Bearer {{tokenOwner}}
+
+--RecipeBoundary
+Content-Disposition: form-data; name="name"
+
+Braised Pork Rice
+--RecipeBoundary
+Content-Disposition: form-data; name="ingredients"
+
+Ground Pork, White Rice, Soy Sauce, Black Vinegar, Onions, Garlic, Sugar
+--RecipeBoundary
+Content-Disposition: form-data; name="image"; filename="mapo-tofu.png"
+Content-Type: image/png
+
+< ./test-images/mapo-tofu.png
+--RecipeBoundary--
+
+### Create recipe (BAD: missing name) -> 400
+POST {{host}}/api/recipes
+Content-Type: multipart/form-data; boundary=RecipeBoundary
+Authorization: Bearer {{tokenTest}}
+
+--RecipeBoundary
+Content-Disposition: form-data; name="ingredients"
+
+Only ingredients
+--RecipeBoundary--
+
+### Update recipe without changing image (GOOD) -> 200
+PUT {{host}}/api/recipes/{{recipeAnyId}}
+Content-Type: multipart/form-data; boundary=RecipeBoundary
+Authorization: Bearer {{tokenTest}}
+
+--RecipeBoundary
+Content-Disposition: form-data; name="name"
+
+Updated Mapo Tofu
+--RecipeBoundary
+Content-Disposition: form-data; name="ingredients"
+
+Tofu, Ground Pork, Chili Bean Paste, Garlic, Green Onion
+--RecipeBoundary--
+
+### Update recipe with new uploaded image (GOOD) -> 200
+PUT {{host}}/api/recipes/{{recipeAnyId}}
+Content-Type: multipart/form-data; boundary=RecipeBoundary
+Authorization: Bearer {{tokenOwner}}
+
+--RecipeBoundary
+Content-Disposition: form-data; name="name"
+
+Updated Mapo Tofu
+--RecipeBoundary
+Content-Disposition: form-data; name="ingredients"
+
+Ground Pork, White Rice, Soy Sauce, Black Vinegar, Onions, Garlic, Sugar, Green Onion
+--RecipeBoundary
+Content-Disposition: form-data; name="image"; filename="updated-mapo-tofu.png"
+Content-Type: image/png
+
+< ./test-images/updated-mapo-tofu.png
+--RecipeBoundary--
+
+### Update recipe (BAD: no token) -> 401
+PUT {{host}}/api/recipes/{{recipeAnyId}}
+Content-Type: multipart/form-data; boundary=RecipeBoundary
+
+--RecipeBoundary
+Content-Disposition: form-data; name="name"
+
+Should Fail
+--RecipeBoundary
+Content-Disposition: form-data; name="ingredients"
+
+No auth token
+--RecipeBoundary--
+
+### Update recipe (BAD: wrong owner / not found) -> 404
+PUT {{host}}/api/recipes/{{recipeAnyId}}
+Content-Type: multipart/form-data; boundary=RecipeBoundary
+Authorization: Bearer {{tokenDucky}}
+
+--RecipeBoundary
+Content-Disposition: form-data; name="name"
+
+Hacked Recipe
+--RecipeBoundary
+Content-Disposition: form-data; name="ingredients"
+
+Should not update
+--RecipeBoundary--
+
+### Update recipe (BAD: invalid ObjectId) -> 500
+PUT {{host}}/api/recipes/not-a-valid-objectid
+Content-Type: multipart/form-data; boundary=RecipeBoundary
+Authorization: Bearer {{tokenTest}}
+
+--RecipeBoundary
+Content-Disposition: form-data; name="name"
+
+Broken ID
+--RecipeBoundary
+Content-Disposition: form-data; name="ingredients"
+
+Broken
+--RecipeBoundary--
+
+### Delete recipe (GOOD)
+DELETE {{host}}/api/recipes/{{recipeAnyId}}
+Authorization: Bearer {{tokenOwner}}
 
 
-### Create a new recipe
-POST http://localhost:3000/api/recipes
-Content-Type: application/json
-
-{
-  "name": "Mapo Tofu",
-  "ingredients": "Tofu, Ground Pork, Chili Bean Paste",
-  "imgSrc": "https://placehold.co/500x200",
-  "alt": "placeholder-blank"
-}
-
-
-### Update an existing recipe (replace ID)
-PUT http://localhost:3000/api/recipes/REPLACE_WITH_ID
-Content-Type: application/json
-
-{
-  "name": "Updated Mapo Tofu",
-  "ingredients": "Tofu, Pork, Chili Oil"
-}
-
-
-
-### =========================================
+############################################################
 ### MEAL PLANS
-### =========================================
+############################################################
 
-### Get all meal plans
-GET http://localhost:3000/api/meal-plans
+### Get all meal plans (BAD: no token) -> 401
+GET {{host}}/api/meal-plans
 
+### Get all meal plans (authorized as test user) -> 200
+GET {{host}}/api/meal-plans
+Authorization: Bearer {{tokenTest}}
 
-### Create meal plan entries (simulate PrepPage)
-POST http://localhost:3000/api/meal-plans
+### Get all meal plans (authorized as owner user) -> 200
+GET {{host}}/api/meal-plans
+Authorization: Bearer {{tokenOwner}}
+
+### Create meal plan entries (GOOD) -> 201
+POST {{host}}/api/meal-plans
 Content-Type: application/json
+Authorization: Bearer {{tokenTest}}
 
 {
   "entries": [
@@ -70,83 +299,43 @@ Content-Type: application/json
   ]
 }
 
-### =========================================
-### RECIPES WITH IMAGE UPLOAD
-### =========================================
+### Create meal plans (BAD: missing entries) -> 400
+POST {{host}}/api/meal-plans
+Content-Type: application/json
+Authorization: Bearer {{tokenTest}}
 
-### Create a new recipe with an uploaded image
-POST http://localhost:3000/api/recipes
-Content-Type: multipart/form-data; boundary=MyBoundary
+{}
 
---MyBoundary
-Content-Disposition: form-data; name="name"
+### Create meal plans (BAD: empty entries) -> 400
+POST {{host}}/api/meal-plans
+Content-Type: application/json
+Authorization: Bearer {{tokenTest}}
 
-Mapo Tofu
---MyBoundary
-Content-Disposition: form-data; name="ingredients"
+{
+  "entries": []
+}
 
-Tofu, Ground Pork, Chili Bean Paste, Garlic, Green Onion
---MyBoundary
-Content-Disposition: form-data; name="image"; filename="mapo-tofu.png"
-Content-Type: image/png
+### Create meal plans (BAD: no token) -> 401
+POST {{host}}/api/meal-plans
+Content-Type: application/json
 
-< ./test-images/mapo-tofu.png
---MyBoundary--
+{
+  "entries": [
+    {
+      "day": "fri",
+      "meal": "lunch",
+      "kind": "prepped",
+      "recipe": "Mapo Tofu",
+      "ateOne": false,
+      "servings": 1
+    }
+  ]
+}
 
+### Clear all meal plans for test user -> 204
+DELETE {{host}}/api/meal-plans
+Authorization: Bearer {{tokenTest}}
 
-### Create a new recipe without an image
-POST http://localhost:3000/api/recipes
-Content-Type: multipart/form-data; boundary=MyBoundary
-
---MyBoundary
-Content-Disposition: form-data; name="name"
-
-Tomato Egg Stir Fry
---MyBoundary
-Content-Disposition: form-data; name="ingredients"
-
-Eggs, Tomatoes, Green Onion, Salt, Sugar
---MyBoundary--
-
-
-### Update an existing recipe with a new uploaded image
-PUT http://localhost:3000/api/recipes/69bbc39834b7fdcb067c70c1
-Content-Type: multipart/form-data; boundary=MyBoundary
-
---MyBoundary
-Content-Disposition: form-data; name="name"
-
-Updated Mapo Tofu
---MyBoundary
-Content-Disposition: form-data; name="ingredients"
-
-Tofu, Ground Pork, Chili Bean Paste, Garlic, Green Onion, Sichuan Peppercorn
---MyBoundary
-Content-Disposition: form-data; name="image"; filename="updated-mapo-tofu.png"
-Content-Type: image/png
-
-< ./test-images/updated-mapo-tofu.png
---MyBoundary--
-
-
-### Update an existing recipe without changing image
-PUT http://localhost:3000/api/recipes/69bbc077f5aa2dacc15fdb87
-Content-Type: multipart/form-data; boundary=MyBoundary
-
---MyBoundary
-Content-Disposition: form-data; name="name"
-
-Updated Tomato Egg Stir Fry
---MyBoundary
-Content-Disposition: form-data; name="ingredients"
-
-Eggs, Tomatoes, Green Onion, Salt, Sugar, White Pepper
---MyBoundary--
-
-
-### =========================================
-### DEBUG / TEST
-### =========================================
-
-### Hello test route
-GET http://localhost:3000/api/hello
+### Clear all meal plans for owner user -> 204
+DELETE {{host}}/api/meal-plans
+Authorization: Bearer {{tokenOwner}}
