@@ -1,26 +1,15 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 
 export function EditRecipeModal({
-    isOpen,
-    onClose,
-    onSave,
-    mode,
-    recipe,
-}) {
-    const [name, setName] = useState("");
-    const [ingredients, setIngredients] = useState("");
+                                    isOpen,
+                                    onClose,
+                                    onSave,
+                                    mode,
+                                    recipe,
+                                }) {
+    const [name, setName] = useState(() => recipe?.name ?? "");
+    const [ingredients, setIngredients] = useState(() => recipe?.ingredients ?? "");
 
-    useEffect(() => {
-        if (!isOpen) return;
-
-        if (mode === "edit" && recipe) {
-            setName(recipe.name ?? "");
-            setIngredients(recipe.ingredients ?? "");
-        } else {
-            setName("");
-            setIngredients("");
-        }
-    }, [isOpen, mode, recipe]);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -28,6 +17,7 @@ export function EditRecipeModal({
         function onKey(e) {
             if (e.key === "Escape") onClose();
         }
+
         window.addEventListener("keydown", onKey);
         return () => window.removeEventListener("keydown", onKey);
     }, [isOpen, onClose]);
@@ -38,7 +28,7 @@ export function EditRecipeModal({
 
     function handleSubmit(e) {
         e.preventDefault();
-        onSave({ name, ingredients });
+        onSave({name, ingredients});
     }
 
     return (
@@ -47,7 +37,7 @@ export function EditRecipeModal({
             onMouseDown={(e) => {
                 if (e.target === e.currentTarget) onClose();
             }}
-            aria-labelledby="Edit Recipe Modal"
+            aria-labelledby="edit-recipe-title"
             id="edit-recipe-dialog"
         >
 
@@ -79,7 +69,7 @@ export function EditRecipeModal({
                     </div>
                     <div className="form-field">
                         <label htmlFor="recipe-img">Image</label>
-                        <input id="recipe-img" type="file" accept="image/*" />
+                        <input id="recipe-img" type="file" accept="image/*"/>
                     </div>
 
 

@@ -9,7 +9,7 @@ export function PrepPage({ recipes, onSubmit }) {
 
     const [day, setDay] = useState("sun");
     const [time, setTime] = useState("breakfast");
-    const [recipeId, setRecipeId] = useState(recipes[0]?.id ?? "");
+    const [recipeId, setRecipeId] = useState(recipes[0]?._id ?? "");
     const [servings, setServings] = useState(2);
     const [breakfastOnly, setBreakfastOnly] = useState(false);
     const [eatOne, setEatOne] = useState(true);
@@ -17,7 +17,7 @@ export function PrepPage({ recipes, onSubmit }) {
     function handleSubmit(e) {
         e.preventDefault();
 
-        const selected = recipes.find((r) => String(r.id) === String(recipeId));
+        const selected = recipes.find((r) => String(r._id) === String(recipeId));
         const recipeLabel = selected?.name ?? "";
 
         const res = onSubmit({
@@ -67,7 +67,7 @@ export function PrepPage({ recipes, onSubmit }) {
                         <label htmlFor="recipe">Select recipe:</label>
                         <select id="recipe" value={recipeId} onChange={(e) => setRecipeId(e.target.value)} required>
                             {recipes.map((r) => (
-                                <option key={r.id} value={r.id}>
+                                <option key={r._id} value={r._id}>
                                     {r.name}
                                 </option>
                             ))}
