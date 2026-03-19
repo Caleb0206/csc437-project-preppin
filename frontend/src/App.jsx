@@ -44,7 +44,7 @@ function mealPlansToCalendar(mealPlans) {
 
 
 function App() {
-    const [theme, setTheme] = useState("light");
+    const [theme, setTheme] = useState(() => localStorage.getItem("theme") ?? "light");
     const [authToken, setAuthToken] = useState(() => localStorage.getItem("authToken") ?? "");
 
     const [recipes, setRecipes] = useState([]);
@@ -113,6 +113,7 @@ function App() {
     useEffect(() => {
         document.documentElement.classList.remove("light", "dark");
         document.documentElement.classList.add(theme);
+        localStorage.setItem("theme", theme);
     }, [theme]);
 
 

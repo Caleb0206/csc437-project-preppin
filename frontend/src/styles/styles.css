@@ -97,7 +97,16 @@ button {
 }
 
 .header-right {
-    justify-self: end;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--space-1);
+}
+
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
 }
 
 .back-link {
@@ -153,9 +162,10 @@ h6 {
 
     background-color: var(--md-sys-color-surface-container);
     min-width: 0;
-    min-height: 34rem;
+    height: calc(100vh - 8rem);
 
     grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: auto repeat(7, 1fr);
     grid-template-areas:
         ". breakfast lunch dinner"
         "sun sunB sunL sunD"
@@ -185,6 +195,7 @@ h6 {
     align-items: stretch;
 
     overflow: hidden;
+    font-size: 0.7rem;
 }
 
 .meal-card {
@@ -553,8 +564,10 @@ h6 {
 }
 
 .pic {
-    max-width: 20rem;
-    min-width: 4rem;
+    width: 100%;
+    height: 15rem;
+    object-fit: cover;
+    border-radius: var(--radius-1);
 
 }
 
@@ -652,11 +665,24 @@ h6 {
         display: grid;
 
         grid-template-columns: 1fr repeat(7, 1fr);
+        grid-template-rows: auto repeat(3, minmax(6rem, 1fr));
         grid-template-areas:
             ". sun mon tues wed thurs fri sat"
             "breakfast sunB monB tueB wedB thuB friB satB"
             "lunch     sunL monL tueL wedL thuL friL satL"
             "dinner    sunD monD tueD wedD thuD friD satD";
+    }
+
+    .slot {
+        font-size: 1rem;
+    }
+
+    .header-right {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-self: end;
+        gap: var(--space-2);
     }
 
     .card-list {

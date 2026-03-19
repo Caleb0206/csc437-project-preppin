@@ -2,7 +2,7 @@ import {useState} from "react";
 import {NavMenu} from "./NavMenu.jsx";
 import {Link, useNavigate} from "react-router";
 
-export function Header({rightSlot = null, theme, setTheme, authToken, setAuthToken}) {
+export function Header({theme, setTheme, authToken, setAuthToken}) {
     const navigate = useNavigate();
 
     function handleLogout() {
@@ -25,16 +25,19 @@ export function Header({rightSlot = null, theme, setTheme, authToken, setAuthTok
             </div>
             <h1 className="site-title">Preppin'</h1>
             <div className="header-right">
-                <label htmlFor="toggle-theme" className="toggle-theme-label">
-                    Dark Mode
-                </label>
-                <input
-                    type="checkbox"
-                    id="toggle-theme"
-                    className="toggle-theme"
-                    checked={theme === "dark"}
-                    onChange={(e) => setTheme(e.target.checked ? "dark" : "light")}
-                />
+                <div className="theme-toggle">
+                    <label htmlFor="toggle-theme" className="toggle-theme-label">
+                        Dark Mode
+                    </label>
+                    <input
+                        type="checkbox"
+                        id="toggle-theme"
+                        className="toggle-theme"
+                        checked={theme === "dark"}
+                        onChange={(e) => setTheme(e.target.checked ? "dark" : "light")}
+                    />
+                </div>
+
 
                 {authToken && (
                     <button className="logout-btn" onClick={handleLogout}>
@@ -42,7 +45,6 @@ export function Header({rightSlot = null, theme, setTheme, authToken, setAuthTok
                     </button>
                 )}
 
-                {rightSlot}
             </div>
         </header>
     )
