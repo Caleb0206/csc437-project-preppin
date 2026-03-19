@@ -3,5 +3,6 @@ export const VALID_ROUTES = {
     PREP: "/prep",
     RECIPES: "/recipes",
     LOGIN: "/login",
+    REGISTER: "/register",
 
 }
