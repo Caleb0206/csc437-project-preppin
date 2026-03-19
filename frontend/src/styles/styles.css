@@ -427,7 +427,7 @@ h6 {
     background-color: var(--md-sys-color-on-secondary);
 }
 
-.card .pic {
+.pic {
     max-width: 20rem;
     min-width: 4rem;
 
@@ -489,8 +489,6 @@ h6 {
 
 .modal-content button {
     border: var(--border-1) solid var(--md-sys-color-outline);
-    /* box-shadow: none; */
-    /* background-image: none; */
 
     border-radius: 1rem;
     padding: var(--space-3);

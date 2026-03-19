@@ -1,5 +1,5 @@
-import { MongoClient } from "mongodb";
-import { getEnvVar } from "../getEnvVar.js";
+import {MongoClient} from "mongodb";
+import {getEnvVar} from "../getEnvVar.js";
 
 export class RecipesProvider {
     constructor(mongoClient) {
@@ -9,7 +9,7 @@ export class RecipesProvider {
     }
 
     async getAllRecipes() {
-        return await this.collection.find({}).sort({ createdAt: 1 }).toArray();
+        return await this.collection.find({}).sort({createdAt: 1}).toArray();
     }
 
     async createRecipe(recipe) {
@@ -23,7 +23,7 @@ export class RecipesProvider {
         };
 
         const result = await this.collection.insertOne(doc);
-        return { ...doc, _id: result.insertedId };
+        return {...doc, _id: result.insertedId};
     }
 
     async updateRecipe(id, updates) {
@@ -35,11 +35,19 @@ export class RecipesProvider {
             },
         };
 
+        if (updates.imgSrc) {
+            updateDoc.$set.imgSrc = updates.imgSrc;
+        }
+
+        if (updates.alt) {
+            updateDoc.$set.alt = updates.alt;
+        }
+
         await this.collection.updateOne(
-            { _id: id },
+            {_id: id},
             updateDoc,
         );
 
-        return await this.collection.findOne({ _id: id });
+        return await this.collection.findOne({_id: id});
     }
 }

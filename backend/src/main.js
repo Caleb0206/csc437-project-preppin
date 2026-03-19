@@ -10,11 +10,13 @@ import {registerMealPlanRoutes} from "./routes/mealPlanRoutes.js";
 
 const PORT = Number.parseInt(getEnvVar("PORT", false), 10) || 3000;
 const STATIC_DIR = getEnvVar("STATIC_DIR", false) || "public";
+const IMAGE_UPLOAD_DIR = getEnvVar("IMAGE_UPLOAD_DIR", false) || "uploads";
 
 const app = express();
 
 app.use(express.static(STATIC_DIR));
 app.use(express.json());
+app.use("/uploads", express.static(IMAGE_UPLOAD_DIR));
 const mongoClient = connectMongo();
 await mongoClient.connect();
 const recipesProvider = new RecipesProvider(mongoClient);

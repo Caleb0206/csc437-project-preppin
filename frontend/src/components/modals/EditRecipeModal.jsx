@@ -1,4 +1,15 @@
-import {useEffect, useState} from "react";
+import {useEffect, useState, useId} from "react";
+
+const PLACEHOLDER_IMG = "https://placehold.co/500x200";
+
+function readAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (err) => reject(err);
+    });
+}
 
 export function EditRecipeModal({
                                     isOpen,
@@ -7,9 +18,13 @@ export function EditRecipeModal({
                                     mode,
                                     recipe,
                                 }) {
+    const fileInputId = useId();
+
     const [name, setName] = useState(() => recipe?.name ?? "");
     const [ingredients, setIngredients] = useState(() => recipe?.ingredients ?? "");
-
+    const [imageFile, setImageFile] = useState(null);
+    const [previewSrc, setPreviewSrc] = useState(() => recipe?.imgSrc ?? "");
+    const [submitError, setSubmitError] = useState("");
 
     useEffect(() => {
         if (!isOpen) return;
@@ -22,14 +37,42 @@ export function EditRecipeModal({
         return () => window.removeEventListener("keydown", onKey);
     }, [isOpen, onClose]);
 
+    async function handleFileChange(e) {
+        const file = e.target.files?.[0] ?? null;
+        setImageFile(file);
+
+        if (!file) {
+            setPreviewSrc(recipe?.imgSrc ?? "");
+            return;
+        }
+
+        try {
+            const dataUrl = await readAsDataURL(file);
+            setPreviewSrc(dataUrl);
+        } catch (error) {
+            console.error(error);
+            setSubmitError("Could not preview selected image.");
+        }
+    }
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        setSubmitError("");
+
+        const ok = await onSave({
+            name,
+            ingredients,
+            imageFile
+        });
+
+        if (!ok) {
+            setSubmitError("Could not save recipe.");
+        }
+    }
+
     if (!isOpen) return null;
 
     const title = mode === "add" ? "Add Recipe" : "Edit Recipe";
-
-    function handleSubmit(e) {
-        e.preventDefault();
-        onSave({name, ingredients});
-    }
 
     return (
         <div
@@ -45,6 +88,7 @@ export function EditRecipeModal({
                 className="modal-content"
                 role="dialog"
                 aria-modal="true"
+                aria-labelledby="edit-recipe-title"
             >
                 <form className="edit-recipe-form" onSubmit={handleSubmit}>
                     <header className="dialog-header">
@@ -57,6 +101,13 @@ export function EditRecipeModal({
                             ✕
                         </button>
                     </header>
+
+                    {submitError && (
+                        <p className="form-error" role="alert">
+                            {submitError}
+                        </p>
+                    )}
+
                     <div className="form-field">
                         <label htmlFor="recipe-name">Recipe name</label>
                         <input
@@ -68,10 +119,22 @@ export function EditRecipeModal({
                         />
                     </div>
                     <div className="form-field">
-                        <label htmlFor="recipe-img">Image</label>
-                        <input id="recipe-img" type="file" accept="image/*"/>
+                        <label htmlFor={fileInputId}>Choose image to upload</label>
+                        <input
+                            id={fileInputId}
+                            name="image"
+                            type="file"
+                            accept=".png,.jpg,.jpeg"
+                            onChange={handleFileChange}
+                        />
                     </div>
-
+                    <div className="form-field">
+                        <img
+                            className="pic"
+                            src={previewSrc || PLACEHOLDER_IMG}
+                            alt="preview"
+                        />
+                    </div>
 
                     <div className="form-field">
                         <label htmlFor="ingredients">Ingredients</label>

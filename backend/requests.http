@@ -1,0 +1,152 @@
+### =========================================
+### RECIPES
+### =========================================
+
+### Get all recipes
+GET http://localhost:3000/api/recipes
+
+
+### Create a new recipe
+POST http://localhost:3000/api/recipes
+Content-Type: application/json
+
+{
+  "name": "Mapo Tofu",
+  "ingredients": "Tofu, Ground Pork, Chili Bean Paste",
+  "imgSrc": "https://placehold.co/500x200",
+  "alt": "placeholder-blank"
+}
+
+
+### Update an existing recipe (replace ID)
+PUT http://localhost:3000/api/recipes/REPLACE_WITH_ID
+Content-Type: application/json
+
+{
+  "name": "Updated Mapo Tofu",
+  "ingredients": "Tofu, Pork, Chili Oil"
+}
+
+
+
+### =========================================
+### MEAL PLANS
+### =========================================
+
+### Get all meal plans
+GET http://localhost:3000/api/meal-plans
+
+
+### Create meal plan entries (simulate PrepPage)
+POST http://localhost:3000/api/meal-plans
+Content-Type: application/json
+
+{
+  "entries": [
+    {
+      "day": "tues",
+      "meal": "dinner",
+      "kind": "cooking",
+      "recipe": "Braised Pork Rice",
+      "ateOne": true,
+      "servings": null
+    },
+    {
+      "day": "wed",
+      "meal": "lunch",
+      "kind": "prepped",
+      "recipe": "Braised Pork Rice",
+      "ateOne": false,
+      "servings": 1
+    },
+    {
+      "day": "wed",
+      "meal": "dinner",
+      "kind": "prepped",
+      "recipe": "Braised Pork Rice",
+      "ateOne": false,
+      "servings": 1
+    }
+  ]
+}
+
+### =========================================
+### RECIPES WITH IMAGE UPLOAD
+### =========================================
+
+### Create a new recipe with an uploaded image
+POST http://localhost:3000/api/recipes
+Content-Type: multipart/form-data; boundary=MyBoundary
+
+--MyBoundary
+Content-Disposition: form-data; name="name"
+
+Mapo Tofu
+--MyBoundary
+Content-Disposition: form-data; name="ingredients"
+
+Tofu, Ground Pork, Chili Bean Paste, Garlic, Green Onion
+--MyBoundary
+Content-Disposition: form-data; name="image"; filename="mapo-tofu.png"
+Content-Type: image/png
+
+< ./test-images/mapo-tofu.png
+--MyBoundary--
+
+
+### Create a new recipe without an image
+POST http://localhost:3000/api/recipes
+Content-Type: multipart/form-data; boundary=MyBoundary
+
+--MyBoundary
+Content-Disposition: form-data; name="name"
+
+Tomato Egg Stir Fry
+--MyBoundary
+Content-Disposition: form-data; name="ingredients"
+
+Eggs, Tomatoes, Green Onion, Salt, Sugar
+--MyBoundary--
+
+
+### Update an existing recipe with a new uploaded image
+PUT http://localhost:3000/api/recipes/69bbc39834b7fdcb067c70c1
+Content-Type: multipart/form-data; boundary=MyBoundary
+
+--MyBoundary
+Content-Disposition: form-data; name="name"
+
+Updated Mapo Tofu
+--MyBoundary
+Content-Disposition: form-data; name="ingredients"
+
+Tofu, Ground Pork, Chili Bean Paste, Garlic, Green Onion, Sichuan Peppercorn
+--MyBoundary
+Content-Disposition: form-data; name="image"; filename="updated-mapo-tofu.png"
+Content-Type: image/png
+
+< ./test-images/updated-mapo-tofu.png
+--MyBoundary--
+
+
+### Update an existing recipe without changing image
+PUT http://localhost:3000/api/recipes/69bbc077f5aa2dacc15fdb87
+Content-Type: multipart/form-data; boundary=MyBoundary
+
+--MyBoundary
+Content-Disposition: form-data; name="name"
+
+Updated Tomato Egg Stir Fry
+--MyBoundary
+Content-Disposition: form-data; name="ingredients"
+
+Eggs, Tomatoes, Green Onion, Salt, Sugar, White Pepper
+--MyBoundary--
+
+
+### =========================================
+### DEBUG / TEST
+### =========================================
+
+### Hello test route
+GET http://localhost:3000/api/hello

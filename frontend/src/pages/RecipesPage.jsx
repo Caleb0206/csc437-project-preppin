@@ -40,18 +40,19 @@ export function RecipesPage({recipes, setRecipes, recipesLoading, recipesError})
 
         try {
             setSaveError("");
+
+            const formData = new FormData();
+            formData.set("name", name);
+            formData.set("ingredients", ingredients);
+
+            if (values.imageFile) {
+                formData.set("image", values.imageFile);
+            }
+
             if (modalMode === "add") {
                 const response = await fetch("/api/recipes", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        name,
-                        ingredients,
-                        imgSrc: PLACEHOLDER_IMG,
-                        alt: "placeholder-blank",
-                    }),
+                    body: formData,
                 });
                 if (!response.ok) {
                     throw new Error("Failed to create recipe");
@@ -63,25 +64,22 @@ export function RecipesPage({recipes, setRecipes, recipesLoading, recipesError})
             }
             const response = await fetch(`/api/recipes/${activeRecipeId}`, {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    name,
-                    ingredients,
-                }),
+                body: formData,
             });
             if (!response.ok) {
-                throw new Error("Failed to update recipe");
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || "Failed to update recipe");
             }
             const updatedRecipe = await response.json();
             setRecipes((prev) =>
                 prev.map((r) => (r._id === activeRecipeId ? updatedRecipe : r))
             );
             closeModal();
+            return true;
         } catch (e) {
             console.error(e);
             setSaveError("Could not save recipe");
+            return false;
         }
 
     }

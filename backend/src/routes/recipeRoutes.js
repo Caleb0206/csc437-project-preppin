@@ -1,4 +1,6 @@
-import { ObjectId } from "mongodb";
+import {ObjectId} from "mongodb";
+import {getEnvVar} from "../getEnvVar.js";
+import {imageMiddlewareFactory, handleImageFileErrors} from "./imageUploadMiddleware.js";
 
 export function registerRecipeRoutes(app, recipesProvider) {
     app.get("/api/recipes", async (req, res) => {
@@ -7,57 +9,76 @@ export function registerRecipeRoutes(app, recipesProvider) {
             res.json(recipes);
         } catch (err) {
             console.error(err);
-            res.status(500).json({ error: "Failed to fetch recipes" });
+            res.status(500).json({error: "Failed to fetch recipes"});
         }
     });
 
-    app.post("/api/recipes", async (req, res) => {
-        try {
-            const { name, ingredients, imgSrc, alt } = req.body;
+    app.post(
+        "/api/recipes",
+        imageMiddlewareFactory.single("image"),
+        handleImageFileErrors,
+        async (req, res) => {
+            try {
+                const {name, ingredients} = req.body;
 
-            if (!name?.trim()) {
-                res.status(400).json({ error: "Recipe name is required" });
-                return;
+                if (!name?.trim()) {
+                    res.status(400).json({error: "Recipe name is required"});
+                    return;
+                }
+
+                const imgSrc = req.file
+                    ? `/uploads/${req.file.filename}`
+                    : "https://placehold.co/500x200";
+
+                const recipe = await recipesProvider.createRecipe({
+                    name: name.trim(),
+                    ingredients: ingredients?.trim() ?? "",
+                    imgSrc,
+                    alt: "recipe image",
+                });
+
+                res.status(201).json(recipe);
+            } catch (err) {
+                console.error(err);
+                res.status(500).json({error: "Failed to create recipe"});
             }
+        });
 
-            const recipe = await recipesProvider.createRecipe({
-                name: name.trim(),
-                ingredients: ingredients?.trim() ?? "",
-                imgSrc,
-                alt,
-            });
+    app.put(
+        "/api/recipes/:id",
+        imageMiddlewareFactory.single("image"),
+        handleImageFileErrors,
+        async (req, res) => {
+            try {
+                const id = new ObjectId(req.params.id);
+                const {name, ingredients} = req.body;
 
-            res.status(201).json(recipe);
-        } catch (err) {
-            console.error(err);
-            res.status(500).json({ error: "Failed to create recipe" });
-        }
-    });
+                if (!name?.trim()) {
+                    res.status(400).json({error: "Recipe name is required"});
+                    return;
+                }
 
-    app.put("/api/recipes/:id", async (req, res) => {
-        try {
-            const id = new ObjectId(req.params.id);
-            const { name, ingredients } = req.body;
+                const updates = {
+                    name: name.trim(),
+                    ingredients: ingredients?.trim() ?? "",
+                };
 
-            if (!name?.trim()) {
-                res.status(400).json({ error: "Recipe name is required" });
-                return;
+                if (req.file) {
+                    updates.imgSrc = `/uploads/${req.file.filename}`;
+                    updates.alt = "recipe image";
+                }
+
+                const recipe = await recipesProvider.updateRecipe(id, updates);
+
+                if (!recipe) {
+                    res.status(404).json({error: "Recipe not found"});
+                    return;
+                }
+
+                res.json(recipe);
+            } catch (err) {
+                console.error("PUT recipe failed:", err);
+                res.status(500).json({error: "Failed to update recipe"});
             }
-
-            const recipe = await recipesProvider.updateRecipe(id, {
-                name: name.trim(),
-                ingredients: ingredients?.trim() ?? "",
-            });
-
-            if (!recipe) {
-                res.status(404).json({ error: "Recipe not found" });
-                return;
-            }
-
-            res.json(recipe);
-        } catch (err) {
-            console.error(err);
-            res.status(500).json({ error: "Failed to update recipe" });
-        }
-    });
+        });
 }
