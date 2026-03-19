@@ -8,8 +8,8 @@ export class RecipesProvider {
         this.collection = this.mongoClient.db().collection(collectionName);
     }
 
-    async getAllRecipes() {
-        return await this.collection.find({}).sort({createdAt: 1}).toArray();
+    async getAllRecipes(ownerUsername) {
+        return await this.collection.find({ownerUsername}).sort({createdAt: 1}).toArray();
     }
 
     async createRecipe(recipe) {
@@ -18,6 +18,7 @@ export class RecipesProvider {
             ingredients: recipe.ingredients ?? "",
             imgSrc: recipe.imgSrc ?? "https://placehold.co/500x200",
             alt: recipe.alt ?? "placeholder-blank",
+            ownerUsername: recipe.ownerUsername,
             createdAt: new Date(),
             updatedAt: new Date(),
         };
@@ -26,7 +27,7 @@ export class RecipesProvider {
         return {...doc, _id: result.insertedId};
     }
 
-    async updateRecipe(id, updates) {
+    async updateRecipe(id, ownerUsername, updates) {
         const updateDoc = {
             $set: {
                 name: updates.name,
@@ -44,10 +45,10 @@ export class RecipesProvider {
         }
 
         await this.collection.updateOne(
-            {_id: id},
+            {_id: id, ownerUsername},
             updateDoc,
         );
 
-        return await this.collection.findOne({_id: id});
+        return await this.collection.findOne({_id: id, ownerUsername});
     }
 }

@@ -9,7 +9,7 @@ export function PrepPage({recipes, onSubmit}) {
 
     const [day, setDay] = useState("sun");
     const [time, setTime] = useState("breakfast");
-    const [recipeId, setRecipeId] = useState(recipes[0]?._id ?? "");
+    const [recipeId, setRecipeId] = useState("");
     const [servings, setServings] = useState(2);
     const [breakfastOnly, setBreakfastOnly] = useState(false);
     const [eatOne, setEatOne] = useState(true);
@@ -19,7 +19,8 @@ export function PrepPage({recipes, onSubmit}) {
     async function handleSubmit(e) {
         e.preventDefault();
 
-        const selected = recipes.find((r) => String(r._id) === String(recipeId));
+        const effectiveRecipeId = recipeId || recipes[0]?._id || "";
+        const selected = recipes.find((r) => String(r._id) === String(effectiveRecipeId));
         const recipeLabel = selected?.name ?? "";
 
         const res = await onSubmit({
@@ -78,10 +79,15 @@ export function PrepPage({recipes, onSubmit}) {
 
                     <div className="form-field">
                         <label htmlFor="recipe">Select recipe:</label>
-                        <select id="recipe" value={recipeId} onChange={(e) => {
-                            setRecipeId(e.target.value);
-                            setSubmitError("");
-                        }} required>
+                        <select
+                            id="recipe"
+                            value={recipeId || recipes[0]?._id || ""}
+                            onChange={(e) => {
+                                setRecipeId(e.target.value);
+                                setSubmitError("");
+                            }}
+                            required
+                        >
                             {recipes.map((r) => (
                                 <option key={r._id} value={r._id}>
                                     {r.name}

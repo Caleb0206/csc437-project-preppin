@@ -1,8 +1,16 @@
-import { useState } from "react";
-import { NavMenu } from "./NavMenu.jsx";
-import { Link } from "react-router";
+import {useState} from "react";
+import {NavMenu} from "./NavMenu.jsx";
+import {Link, useNavigate} from "react-router";
 
-export function Header({ rightSlot = null, theme, setTheme }) {
+export function Header({rightSlot = null, theme, setTheme, authToken, setAuthToken}) {
+    const navigate = useNavigate();
+
+    function handleLogout() {
+        localStorage.removeItem("authToken");
+        setAuthToken("");
+        navigate("/login");
+    }
+
     return (
         <header className="site-header">
             <div className="header-left">
@@ -12,11 +20,11 @@ export function Header({ rightSlot = null, theme, setTheme }) {
                         <Link className="header-nav-link" to="/recipes">Recipes</Link>
                         <Link className="header-nav-link" to="/prep">Prep</Link>
                     </div>
-                    <NavMenu />
+                    <NavMenu/>
                 </nav>
             </div>
             <h1 className="site-title">Preppin'</h1>
-            <div className="header-right" >
+            <div className="header-right">
                 <label htmlFor="toggle-theme" className="toggle-theme-label">
                     Dark Mode
                 </label>
@@ -28,8 +36,14 @@ export function Header({ rightSlot = null, theme, setTheme }) {
                     onChange={(e) => setTheme(e.target.checked ? "dark" : "light")}
                 />
 
+                {authToken && (
+                    <button className="logout-btn" onClick={handleLogout}>
+                        Logout
+                    </button>
+                )}
+
                 {rightSlot}
             </div>
-        </header >
+        </header>
     )
 }

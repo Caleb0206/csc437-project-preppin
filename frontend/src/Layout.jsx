@@ -1,17 +1,16 @@
-import { Outlet, Link, useLocation } from "react-router";
-import { Header } from "./components/Header.jsx";
+import {Outlet} from "react-router";
+import {Header} from "./components/Header.jsx";
 
-export function Layout({ theme, setTheme }) {
-    const { pathname } = useLocation();
-    const showBack = pathname !== "/";
-
+export function Layout({theme, setTheme, authToken, setAuthToken}) {
     return (
         <>
             <Header
                 theme={theme}
                 setTheme={setTheme}
+                authToken={authToken}
+                setAuthToken={setAuthToken}
             />
-            <Outlet />
+            <Outlet/>
         </>
     )
 }

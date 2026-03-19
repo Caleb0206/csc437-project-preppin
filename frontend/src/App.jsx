@@ -1,10 +1,12 @@
 import {useState, useEffect} from "react";
 
-import {Routes, Route, Link} from "react-router";
+import {BrowserRouter, Routes, Route} from "react-router";
 import {Layout} from "./Layout.jsx";
 import {HomePage} from "./pages/HomePage.jsx"
 import {PrepPage} from "./pages/PrepPage.jsx";
 import {RecipesPage} from "./pages/RecipesPage.jsx";
+import {LoginPage} from "./pages/LoginPage.jsx";
+import {ProtectedRoute} from "./pages/ProtectedRoute.jsx";
 
 const DAYS = ["sun", "mon", "tues", "wed", "thurs", "fri", "sat"];
 
@@ -43,6 +45,8 @@ function mealPlansToCalendar(mealPlans) {
 
 function App() {
     const [theme, setTheme] = useState("light");
+    const [authToken, setAuthToken] = useState(() => localStorage.getItem("authToken") ?? "");
+
     const [recipes, setRecipes] = useState([]);
     const [recipesLoading, setRecipesLoading] = useState(true);
     const [recipesError, setRecipesError] = useState("");
@@ -58,7 +62,11 @@ function App() {
                 setRecipesLoading(true);
                 setRecipesError("");
 
-                const response = await fetch("/api/recipes");
+                const response = await fetch("/api/recipes", {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`,
+                    }
+                });
                 if (!response.ok) {
                     throw new Error("Failed to load recipes");
                 }
@@ -73,7 +81,7 @@ function App() {
         }
 
         loadRecipes();
-    }, []);
+    }, [authToken]);
 
     useEffect(() => {
         async function loadMealPlans() {
@@ -81,7 +89,11 @@ function App() {
                 setMealPlansLoading(true);
                 setMealPlansError("");
 
-                const response = await fetch("/api/meal-plans");
+                const response = await fetch("/api/meal-plans", {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`,
+                    }
+                });
                 if (!response.ok) {
                     throw new Error("Failed to load meal plans");
                 }
@@ -96,7 +108,7 @@ function App() {
         }
 
         loadMealPlans();
-    }, []);
+    }, [authToken]);
 
     useEffect(() => {
         document.documentElement.classList.remove("light", "dark");
@@ -163,6 +175,7 @@ function App() {
             const response = await fetch("/api/meal-plans", {
                 method: "POST",
                 headers: {
+                    Authorization: `Bearer ${authToken}`,
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({entries}),
@@ -198,35 +211,60 @@ function App() {
 
 
     return (
+
         <>
             <Routes>
-                <Route element={<Layout theme={theme} setTheme={setTheme}/>}>
-                    <Route path="/" element={<HomePage calendar={calendar}/>}/>
+                <Route path="/" element={
+                    <Layout
+                        theme={theme}
+                        setTheme={setTheme}
+                        authToken={authToken}
+                        setAuthToken={setAuthToken}
+                    />
+                }>
+                    <Route
+                        index
+                        element={
+                            <ProtectedRoute authToken={authToken}>
+                                <HomePage calendar={calendar}/>
+                            </ProtectedRoute>
+                        }
+                    />
                     <Route
                         path="/recipes"
                         element={
-                            <RecipesPage
-                                recipes={recipes}
-                                setRecipes={setRecipes}
-                                recipesLoading={recipesLoading}
-                                recipesError={recipesError}
-                            />}
+                            <ProtectedRoute authToken={authToken}>
+                                <RecipesPage
+                                    recipes={recipes}
+                                    setRecipes={setRecipes}
+                                    recipesLoading={recipesLoading}
+                                    recipesError={recipesError}
+                                    authToken={authToken}
+                                />
+                            </ProtectedRoute>
+                        }
                     />
                     <Route
                         path="/prep"
                         element={
-                            <PrepPage
-                                recipes={recipes}
-                                recipesLoading={recipesLoading}
-                                recipesError={recipesError}
-                                onSubmit={prepSubmit}
-                            />
+                            <ProtectedRoute authToken={authToken}>
+                                <PrepPage
+                                    recipes={recipes}
+                                    recipesLoading={recipesLoading}
+                                    recipesError={recipesError}
+                                    onSubmit={prepSubmit}
+                                />
+                            </ProtectedRoute>
                         }
                     />
+                    <Route path="/login"
+                           element={<LoginPage key={"login"} isRegistering={false} onAuthToken={setAuthToken}/>}/>
+                    <Route path="/register"
+                           element={<LoginPage key={"register"} isRegistering={true} onAuthToken={setAuthToken}/>}/>
                 </Route>
-
             </Routes>
         </>
+
     );
 }
 

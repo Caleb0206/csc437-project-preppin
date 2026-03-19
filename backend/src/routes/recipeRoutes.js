@@ -5,7 +5,7 @@ import {imageMiddlewareFactory, handleImageFileErrors} from "./imageUploadMiddle
 export function registerRecipeRoutes(app, recipesProvider) {
     app.get("/api/recipes", async (req, res) => {
         try {
-            const recipes = await recipesProvider.getAllRecipes();
+            const recipes = await recipesProvider.getAllRecipes(req.userInfo.username);
             res.json(recipes);
         } catch (err) {
             console.error(err);
@@ -35,6 +35,7 @@ export function registerRecipeRoutes(app, recipesProvider) {
                     ingredients: ingredients?.trim() ?? "",
                     imgSrc,
                     alt: "recipe image",
+                    ownerUsername: req.userInfo.username,
                 });
 
                 res.status(201).json(recipe);
@@ -68,7 +69,7 @@ export function registerRecipeRoutes(app, recipesProvider) {
                     updates.alt = "recipe image";
                 }
 
-                const recipe = await recipesProvider.updateRecipe(id, updates);
+                const recipe = await recipesProvider.updateRecipe(id, req.userInfo.username, updates);
 
                 if (!recipe) {
                     res.status(404).json({error: "Recipe not found"});

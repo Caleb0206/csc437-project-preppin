@@ -3,7 +3,7 @@ import {EditRecipeModal} from "../components/modals/EditRecipeModal.jsx";
 
 const PLACEHOLDER_IMG = "https://placehold.co/500x200";
 
-export function RecipesPage({recipes, setRecipes, recipesLoading, recipesError}) {
+export function RecipesPage({recipes, setRecipes, recipesLoading, recipesError, authToken}) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState("edit");
     const [activeRecipeId, setActiveRecipeId] = useState(null);
@@ -52,6 +52,9 @@ export function RecipesPage({recipes, setRecipes, recipesLoading, recipesError})
             if (modalMode === "add") {
                 const response = await fetch("/api/recipes", {
                     method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${authToken}`,
+                    },
                     body: formData,
                 });
                 if (!response.ok) {
@@ -64,6 +67,9 @@ export function RecipesPage({recipes, setRecipes, recipesLoading, recipesError})
             }
             const response = await fetch(`/api/recipes/${activeRecipeId}`, {
                 method: "PUT",
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
                 body: formData,
             });
             if (!response.ok) {
@@ -96,6 +102,11 @@ export function RecipesPage({recipes, setRecipes, recipesLoading, recipesError})
                     </div>
 
                     {recipesLoading && <p>Loading recipes...</p>}
+                    {recipesError && recipesError === "Could not load recipes" && (
+                        <div>
+                            <p>Add recipes!</p>
+                        </div>
+                    )}
                     {recipesError && <p>{recipesError}</p>}
                     {saveError && <p>{saveError}</p>}
 

@@ -8,17 +8,18 @@ export class MealPlansProvider {
         this.collection = this.mongoClient.db().collection(collectionName);
     }
 
-    async getAllMealPlans() {
-        return await this.collection.find({}).toArray();
+    async getAllMealPlans(ownerUsername) {
+        return await this.collection.find({ownerUsername}).toArray();
     }
 
-    async createMealPlanEntries(entries) {
+    async createMealPlanEntries(ownerUsername, entries) {
         if (!Array.isArray(entries) || entries.length === 0) {
             return [];
         }
 
         const docs = entries.map((entry) => ({
             ...entry,
+            ownerUsername,
             createdAt: new Date(),
             updatedAt: new Date(),
         }));
@@ -27,7 +28,7 @@ export class MealPlansProvider {
         return docs;
     }
 
-    async clearAllMealPlans() {
-        return await this.collection.deleteMany({});
+    async clearAllMealPlans(ownerUsername) {
+        return await this.collection.deleteMany({ownerUsername});
     }
 }
