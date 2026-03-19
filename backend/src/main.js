@@ -1,6 +1,6 @@
 import express from "express";
 import { getEnvVar } from "./getEnvVar.js";
-import { SHARED_TEST } from "./shared/example.js";
+import { SHARED_TEST } from "../../shared/example.js";
 
 const PORT = Number.parseInt(getEnvVar("PORT", false), 10) || 3000;
 const app = express();
